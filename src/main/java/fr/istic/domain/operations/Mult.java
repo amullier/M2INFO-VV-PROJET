@@ -1,4 +1,7 @@
-package fr.istic.domain;
+package fr.istic.domain.operations;
+
+import fr.istic.domain.Operation;
+import fr.istic.domain.OperationException;
 
 public class Mult implements Operation {
     /**
@@ -10,7 +13,7 @@ public class Mult implements Operation {
      * @throws OperationException
      */
     @Override
-    public int execute(int op1, int op2) throws OperationException {
+    public double execute(int op1, int op2) throws OperationException {
         return op1*op2;
     }
 }

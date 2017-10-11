@@ -1,6 +1,9 @@
-package fr.istic.domain;
+package fr.istic.domain.operations;
 
-public class Div  implements Operation{
+import fr.istic.domain.Operation;
+import fr.istic.domain.OperationException;
+
+public class Div implements Operation {
     /**
      * Makes the division between operands op1 and op2
      *
@@ -10,7 +13,7 @@ public class Div  implements Operation{
      * @throws OperationException if op2 is equals to zero
      */
     @Override
-    public int execute(int op1, int op2) throws OperationException {
+    public double execute(int op1, int op2) throws OperationException {
         if(op2==0){
             throw new OperationException("The operand 2 can't be equals to zero for the division");
         }
