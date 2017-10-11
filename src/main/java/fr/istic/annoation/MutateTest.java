@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 
 
 /**
- * This annotation will be used to indicate if a Type or a methode have to mutated
- * @author rostom
+ * This annotation will be used to indicate if a Type or a method have to mutated
+ * @author romain
  *
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 public @interface MutateTest {
 	
 	/**
-	 * the default value is false, means that the mutation will be occured
+	 * the default value is false, it means that the mutation will be occured
 	 * @return 
 	 */
     boolean ignor() default false;
