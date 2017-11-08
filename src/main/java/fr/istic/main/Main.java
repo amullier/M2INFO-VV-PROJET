@@ -19,32 +19,39 @@ public class Main {
 	private static Logger logger = LoggerFactory.getLogger(Main.class);
 
 	public static void main(String[] args) {
+
+		// Path definitions
+		File classDir = new File("../VV-DUMMY-PROJET/target/classes");
+		File testDir = new File("../VV-DUMMY-PROJET/target/test-classes");
+
+		// Test classes definitions
+		String testPackage = "fr.istic.vv.operations.";
+		String[] testClasses = { testPackage + "PlusTest", testPackage + "MinusTest", testPackage + "TimesTest",
+				testPackage + "DivTest" };
+
 		try {
 			ClassPool pool = ClassPool.getDefault();
 
 			Loader loader = new Loader(pool);
 			Translator translator = new TranslatorImpl();
-			File classDir = new File("../TargetProject/target/classes");
-			File testDir = new File("../TargetProject/target/test-classes");
+
 			loader.addTranslator(pool, translator);
 			pool.appendClassPath(classDir.getPath());
 			pool.appendClassPath(testDir.getPath());
-			loader.run("fr.istic.vv.TargetApp", args);
+
+			// App loading
+			loader.run("fr.istic.vv.Main", args);
 			JUnitCore jUnitCore = new JUnitCore();
-			String[] classes = { "fr.istic.vv.AdditionTest", "fr.istic.vv.MultiplicationTest",
-					"fr.istic.vv.DivisionTest", "fr.istic.vv.SubtractionTest" };
-			for (CtClass ctClass : pool.get(classes)) {
+
+			for (CtClass ctClass : pool.get(testClasses)) {
 				Request request = Request.aClass(ctClass.toClass());
 				Result r = jUnitCore.run(request);
 				logger.info("Tests ran : " + r.getRunCount() + ", failed : " + r.getFailureCount());
 				logger.info("FAILURE : " + r.getFailures());
 				logger.info("SUCCESS : " + r.wasSuccessful());
 			}
-
-		}
-
-		catch (Throwable e) {
-			logger.info("Oh, no! Something went wrong.", e);
+		} catch (Throwable e) {
+			logger.error("Oh, no! Something went wrong.", e);
 		}
 
 	}

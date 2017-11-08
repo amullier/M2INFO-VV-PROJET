@@ -1,5 +1,9 @@
 package fr.istic.translator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.istic.main.Main;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtMethod;
@@ -8,15 +12,19 @@ import javassist.Translator;
 
 public class TranslatorImpl implements Translator {
 
-    public void start(ClassPool classPool) throws NotFoundException, CannotCompileException {
-        System.out.println("Starting");
-    }
+	private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public void onLoad(ClassPool classPool, String className) throws NotFoundException, CannotCompileException {
-        if(className.contains("Addition")){
-            CtMethod operate = classPool.get(className).getDeclaredMethod("operate");
-            //operate.setBody("return FirstTerm - SecondTerm;");
-        }
+	public void start(ClassPool classPool) throws NotFoundException, CannotCompileException {
+		logger.info("Starting");
+	}
 
-    }
+	public void onLoad(ClassPool classPool, String className) throws NotFoundException, CannotCompileException {
+
+		logger.debug("CLASSNAME : " + className);
+		if (className.contains("Addition")) {
+			CtMethod operate = classPool.get(className).getDeclaredMethod("operate");
+			// operate.setBody("return FirstTerm - SecondTerm;");
+		}
+
+	}
 }
