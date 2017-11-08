@@ -21,6 +21,6 @@ public @interface MutateTest {
 	 * the default value is false, it means that the mutation will be occured
 	 * @return 
 	 */
-    boolean ignor() default false;
+    boolean ignore() default false;
 
 }
