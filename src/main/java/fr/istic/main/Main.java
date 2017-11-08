@@ -41,6 +41,7 @@ public class Main {
 
 			// App loading
 			loader.run("fr.istic.vv.Main", args);
+
 			JUnitCore jUnitCore = new JUnitCore();
 
 			for (CtClass ctClass : pool.get(testClasses)) {
