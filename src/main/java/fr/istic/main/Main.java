@@ -36,6 +36,8 @@ public class Main {
 			Translator translator = new TranslatorImpl();
 
 			loader.addTranslator(pool, translator);
+
+			// FIXME : classpath a fixer
 			pool.appendClassPath(classDir.getPath());
 			pool.appendClassPath(testDir.getPath());
 
@@ -47,7 +49,7 @@ public class Main {
 			for (CtClass ctClass : pool.get(testClasses)) {
 				Request request = Request.aClass(ctClass.toClass());
 				Result r = jUnitCore.run(request);
-				logger.info("Tests ran : " + r.getRunCount() + ", failed : " + r.getFailureCount());
+				logger.info("Tests ran : {}, failed : {}", r.getRunCount(), r.getFailureCount());
 				logger.info("FAILURE : " + r.getFailures());
 				logger.info("SUCCESS : " + r.wasSuccessful());
 			}
