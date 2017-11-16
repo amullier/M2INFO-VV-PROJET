@@ -1,4 +1,4 @@
-package fr.istic.annotation;
+package fr.istic.vv.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

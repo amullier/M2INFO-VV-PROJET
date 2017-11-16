@@ -1,4 +1,4 @@
-package fr.istic.annotation;
+package fr.istic.vv.annotation;
 
 import spoon.reflect.factory.*;
 
