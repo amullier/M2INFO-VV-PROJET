@@ -153,11 +153,20 @@ public class TestRunnerImpl implements TestRunner {
 		return null;
 	}
 
+	/**
+	 * Run a test class with the mutated class
+	 * 
+	 * @param testClass
+	 */
 	private void runATestClass(String testClass) {
 		JUnitCore core = new JUnitCore();
 
-		// TODO : Replace LoggingListener by a useful listener
-		core.addListener(new LoggingListener());
+		logger.info("Ajout du Listener {} pour le test", LoggingListener.class);
+		core.addListener(new LoggingListener()); // TODO : Replace LoggingListener by a useful listener
+
+		logger.info("Ajout des classes sauf celle du mutant");
+
+		logger.info("Ajout du mutant");
 
 		logger.info("Début de l'éxécution de la classe de test : {}", testClass);
 		// FIXME : La classe ne peut pas être un string
