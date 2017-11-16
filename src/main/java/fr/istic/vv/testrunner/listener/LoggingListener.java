@@ -7,9 +7,12 @@ import org.junit.runner.notification.RunListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MutantAliveListener extends RunListener {
+/**
+ * Logging listener for JUnit test execution
+ */
+public class LoggingListener extends RunListener {
 
-	Logger logger = LoggerFactory.getLogger(MutantAliveListener.class);
+	Logger logger = LoggerFactory.getLogger(LoggingListener.class);
 
 	@Override
 	public void testRunStarted(Description description) throws Exception {
