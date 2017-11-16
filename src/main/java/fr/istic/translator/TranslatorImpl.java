@@ -3,7 +3,7 @@ package fr.istic.translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.istic.main.Main;
+import fr.istic.vv.main.Main;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtMethod;

@@ -1,4 +1,4 @@
-package fr.istic.main;
+package fr.istic.vv.main;
 
 import java.io.File;
 
