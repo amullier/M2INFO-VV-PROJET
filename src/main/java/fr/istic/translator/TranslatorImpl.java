@@ -9,6 +9,7 @@ import javassist.ClassPool;
 import javassist.CtMethod;
 import javassist.NotFoundException;
 import javassist.Translator;
+import javassist.bytecode.Opcode;
 
 public class TranslatorImpl implements Translator {
 
