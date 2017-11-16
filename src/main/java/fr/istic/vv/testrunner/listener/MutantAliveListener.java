@@ -1,4 +1,4 @@
-package fr.istic.vv.testrunnner;
+package fr.istic.vv.testrunner.listener;
 
 import org.junit.runner.Description;
 import org.junit.runner.Result;
