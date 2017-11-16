@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.istic.vv.common.MutantContainer;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
+import fr.istic.vv.testrunner.listener.LoggingListener;
 
 public class TestRunnerImpl implements TestRunner {
 
@@ -154,6 +155,10 @@ public class TestRunnerImpl implements TestRunner {
 
 	private void runATestClass(String testClass) {
 		JUnitCore core = new JUnitCore();
+
+		// TODO : Replace LoggingListener by a useful listener
+		core.addListener(new LoggingListener());
+
 		logger.info("Début de l'éxécution de la classe de test : {}", testClass);
 		// FIXME : La classe ne peut pas être un string
 		// Result result = core.run(testClass);
