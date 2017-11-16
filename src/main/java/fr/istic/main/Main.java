@@ -59,7 +59,7 @@ public class Main {
                     		int index = ci.next();
                     		int op = ci.byteAt(index);
                     		System.out.println("op : "+op + " - " + Mnemonic.OPCODE[op]);
-                    		if(Mnemonic.OPCODE[op].equals("dadd")) {
+                    		if(Mnemonic.OPCODE[op].equals("dadd")) { // TODO: géré quand c'est un iadd
                     			System.out.println("c'est une addition");
                     		}
                     	}
