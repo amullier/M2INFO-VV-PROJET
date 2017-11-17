@@ -12,6 +12,13 @@ public interface MutantContainer {
 	public String getMutationDescription();
 
 	/**
+	 * Sets the mutation description
+	 * 
+	 * @param description
+	 */
+	public void setMutationDescription(String description);
+
+	/**
 	 * Gets the mutated class
 	 */
 	public Class<?> getMutatedClass();
