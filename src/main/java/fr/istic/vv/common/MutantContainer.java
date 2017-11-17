@@ -19,7 +19,7 @@ public interface MutantContainer {
 	/**
 	 * set the mutated class to test
 	 * 
-	 * @param cls
+	 * @param mutatedClass
 	 */
-	public void setMutatedClass(Class<?> cls);
+	public void setMutatedClass(Class<?> mutatedClass);
 }
