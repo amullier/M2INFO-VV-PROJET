@@ -23,6 +23,14 @@ public class TestRunnerImpl implements TestRunner {
 	private MutantContainer mutantContainer;
 
 	/**
+	 * Constructor instanciates list classes
+	 */
+	public TestRunnerImpl() {
+		classes = new ArrayList<>();
+		testClasses = new ArrayList<>();
+	}
+
+	/**
 	 * @return the classes
 	 */
 	public List<Class<?>> getClasses() {
@@ -121,8 +129,8 @@ public class TestRunnerImpl implements TestRunner {
 		logger.info("Recherche de la classe de test à effectuer");
 		Class<?> testClass = getTestClassForMutant(mutantContainer);
 		if (testClass == null) {
-			throw new TestRunnerException("La classe de test associée à la classe "
-					+ mutantContainer.getMutatedClass() + " n'a pas été trouvée");
+			throw new TestRunnerException("La classe de test associée à la classe " + mutantContainer.getMutatedClass()
+					+ " n'a pas été trouvée");
 		}
 
 	}
