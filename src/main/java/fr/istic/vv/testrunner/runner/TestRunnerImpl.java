@@ -114,7 +114,7 @@ public class TestRunnerImpl implements TestRunner {
 		}
 
 		logger.debug("Vérification terminée.");
-		logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClassName());
+		logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClass());
 		logger.debug("Ensemble des classes : {}", classes);
 		logger.debug("Ensemble des classes de tests : {}", testClasses);
 
@@ -122,7 +122,7 @@ public class TestRunnerImpl implements TestRunner {
 		Class<?> testClass = getTestClassForMutant(mutantContainer);
 		if (testClass == null) {
 			throw new TestRunnerException("La classe de test associée à la classe "
-					+ mutantContainer.getMutatedClassName() + " n'a pas été trouvée");
+					+ mutantContainer.getMutatedClass() + " n'a pas été trouvée");
 		}
 
 	}
@@ -137,7 +137,7 @@ public class TestRunnerImpl implements TestRunner {
 	 *         TODO: Prendre en compte le chemin des path de classes
 	 */
 	private Class<?> getTestClassForMutant(MutantContainer mutantContainer) {
-		Class<?> originalClass = mutantContainer.getMutatedClassName();
+		Class<?> originalClass = mutantContainer.getMutatedClass();
 		logger.info("Recherche du test de {}", originalClass);
 
 		String searchTestClassName = originalClass + "Test";

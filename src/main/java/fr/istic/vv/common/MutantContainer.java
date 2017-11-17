@@ -6,21 +6,20 @@ package fr.istic.vv.common;
  */
 public interface MutantContainer {
 
-	// TODO add mutant object
-
 	/**
 	 * Gets the mutation description
 	 */
 	public String getMutationDescription();
 
 	/**
-	 * Gets the mutated class name
+	 * Gets the mutated class
 	 */
-	public Class<?> getMutatedClassName();
-	
+	public Class<?> getMutatedClass();
+
 	/**
 	 * set the mutated class to test
+	 * 
 	 * @param cls
 	 */
-	public void setMutatedClassName(Class<?> cls);
+	public void setMutatedClass(Class<?> cls);
 }
