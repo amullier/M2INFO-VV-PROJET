@@ -16,5 +16,5 @@ public interface MutantContainer {
 	/**
 	 * Gets the mutated class name
 	 */
-	public String getMutatedClassName();
+	public Class<?> getMutatedClassName();
 }

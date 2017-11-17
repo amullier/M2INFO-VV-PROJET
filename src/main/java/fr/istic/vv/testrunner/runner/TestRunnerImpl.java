@@ -16,16 +16,16 @@ public class TestRunnerImpl implements TestRunner {
 
 	private static final Logger logger = LoggerFactory.getLogger(TestRunner.class);
 
-	private List<String> classes;
+	private List<Class<?>> classes;
 
-	private List<String> testClasses;
+	private List<Class<?>> testClasses;
 
 	private MutantContainer mutantContainer;
 
 	/**
 	 * @return the classes
 	 */
-	public List<String> getClasses() {
+	public List<Class<?>> getClasses() {
 		return classes;
 	}
 
@@ -35,14 +35,14 @@ public class TestRunnerImpl implements TestRunner {
 	 * @see fr.istic.vv.testrunner.runner.TestRunner#setClasses(java.util.List)
 	 */
 	@Override
-	public void setClasses(List<String> classes) {
-		for (String classString : classes) {
+	public void setClasses(List<Class<?>> classes) {
+		for (Class<?> classString : classes) {
 			addClass(classString);
 		}
 
 	}
 
-	private void addClass(String classString) {
+	private void addClass(Class<?> classString) {
 		if (classes == null) {
 			classes = new ArrayList<>();
 		}
@@ -52,7 +52,7 @@ public class TestRunnerImpl implements TestRunner {
 	/**
 	 * @return the testClasses
 	 */
-	public List<String> getTestClasses() {
+	public List<Class<?>> getTestClasses() {
 		return testClasses;
 	}
 
@@ -62,13 +62,13 @@ public class TestRunnerImpl implements TestRunner {
 	 * @see fr.istic.vv.testrunner.runner.TestRunner#setTestClasses(java.util.List)
 	 */
 	@Override
-	public void setTestClasses(List<String> testClasses) {
-		for (String testClass : testClasses) {
+	public void setTestClasses(List<Class<?>> testClasses) {
+		for (Class<?> testClass : testClasses) {
 			addTestClass(testClass);
 		}
 	}
 
-	private void addTestClass(String testClass) {
+	private void addTestClass(Class<?> testClass) {
 		if (testClasses == null) {
 			testClasses = new ArrayList<>();
 		}
@@ -119,7 +119,7 @@ public class TestRunnerImpl implements TestRunner {
 		logger.debug("Ensemble des classes de tests : {}", testClasses);
 
 		logger.info("Recherche de la classe de test à effectuer");
-		String testClass = getTestClassForMutant(mutantContainer);
+		Class<?> testClass = getTestClassForMutant(mutantContainer);
 		if (testClass == null) {
 			throw new TestRunnerException("La classe de test associée à la classe "
 					+ mutantContainer.getMutatedClassName() + " n'a pas été trouvée");
@@ -136,14 +136,14 @@ public class TestRunnerImpl implements TestRunner {
 	 * 
 	 *         TODO: Prendre en compte le chemin des path de classes
 	 */
-	private String getTestClassForMutant(MutantContainer mutantContainer) {
-		String className = mutantContainer.getMutatedClassName();
-		logger.info("Recherche du test de {}", className);
+	private Class<?> getTestClassForMutant(MutantContainer mutantContainer) {
+		Class<?> originalClass = mutantContainer.getMutatedClassName();
+		logger.info("Recherche du test de {}", originalClass);
 
-		String searchTestClassName = className + "Test";
+		String searchTestClassName = originalClass + "Test";
 		logger.info("Nom de la classe de test à rechercher : {}", searchTestClassName);
 
-		for (String testClass : testClasses) {
+		for (Class<?> testClass : testClasses) {
 			if (testClass.equals(searchTestClassName)) {
 				logger.debug("Classe de test trouvée dans les classes de test du projet");
 				return testClass;
@@ -158,7 +158,7 @@ public class TestRunnerImpl implements TestRunner {
 	 * 
 	 * @param testClass
 	 */
-	private void runATestClass(String testClass) {
+	private void runATestClass(Class<?> testClass) {
 		JUnitCore core = new JUnitCore();
 
 		logger.info("Ajout du Listener {} pour le test", LoggingListener.class);
