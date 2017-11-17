@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.istic.vv.common.MutantContainer;
+import fr.istic.vv.report.ReportService;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
 import fr.istic.vv.testrunner.listener.LoggingListener;
 
@@ -21,6 +22,8 @@ public class TestRunnerImpl implements TestRunner {
 	private List<Class<?>> testClasses;
 
 	private MutantContainer mutantContainer;
+
+	private ReportService reportService;
 
 	/**
 	 * Constructor instanciates list classes
@@ -102,6 +105,21 @@ public class TestRunnerImpl implements TestRunner {
 
 	}
 
+	/**
+	 * @return the reportService
+	 */
+	public ReportService getReportService() {
+		return reportService;
+	}
+
+	/**
+	 * @param reportService
+	 *            the reportService to set
+	 */
+	public void setReportService(ReportService reportService) {
+		this.reportService = reportService;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -170,7 +188,7 @@ public class TestRunnerImpl implements TestRunner {
 		JUnitCore core = new JUnitCore();
 
 		logger.info("Ajout du Listener {} pour le test", LoggingListener.class);
-		core.addListener(new LoggingListener()); // TODO : Replace LoggingListener by a useful listener
+		core.addListener(new LoggingListener()); // Replace LoggingListener by a useful listener
 
 		logger.info("Ajout des classes sauf celle du mutant");
 
