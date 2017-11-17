@@ -17,4 +17,10 @@ public interface MutantContainer {
 	 * Gets the mutated class name
 	 */
 	public Class<?> getMutatedClassName();
+	
+	/**
+	 * set the mutated class to test
+	 * @param cls
+	 */
+	public void setMutatedClassName(Class<?> cls);
 }
