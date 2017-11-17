@@ -100,7 +100,7 @@ public class TestRunnerImpl implements TestRunner {
 	 * @see fr.istic.vv.testrunner.runner.TestRunner#runTests()
 	 */
 	@Override
-	public void runTests() throws TestRunnerException {
+	public void execute() throws TestRunnerException {
 		logger.debug("Vérification des informations du TestRunner");
 
 		if (classes == null || classes.isEmpty()) {

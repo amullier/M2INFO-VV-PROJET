@@ -36,5 +36,5 @@ public interface TestRunner {
 	 * 
 	 * @pre Classes, TestClasses and MutantContainer must not be empty
 	 */
-	public void runTests() throws TestRunnerException;
+	public void execute() throws TestRunnerException;
 }
