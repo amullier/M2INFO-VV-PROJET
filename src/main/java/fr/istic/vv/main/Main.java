@@ -68,44 +68,5 @@ public class Main {
 			}
 		}
 
-		// // Path definitions
-		// File classDir = new File("../VV-DUMMY-PROJET/target/classes");
-		// File testDir = new File("../VV-DUMMY-PROJET/target/test-classes");
-		//
-		// // Test classes definitions
-		// String testPackage = "fr.istic.vv.operations.";
-		// String[] testClasses = { testPackage + "PlusTest", testPackage + "MinusTest",
-		// testPackage + "TimesTest",
-		// testPackage + "DivTest" };
-		//
-		// try {
-		// ClassPool pool = ClassPool.getDefault();
-		//
-		// Loader loader = new Loader(pool);
-		// Translator translator = new TranslatorImpl();
-		//
-		// loader.addTranslator(pool, translator);
-		//
-		// // FIXME : classpath a fixer
-		// pool.appendClassPath(classDir.getPath());
-		// pool.appendClassPath(testDir.getPath());
-		//
-		// // App loading
-		// loader.run("fr.istic.vv.Main", args);
-		//
-		// JUnitCore jUnitCore = new JUnitCore();
-		//
-		// for (CtClass ctClass : pool.get(testClasses)) {
-		// Request request = Request.aClass(ctClass.toClass());
-		// Result r = jUnitCore.run(request);
-		// logger.info("Tests ran : {}, failed : {}", r.getRunCount(),
-		// r.getFailureCount());
-		// logger.info("FAILURE : " + r.getFailures());
-		// logger.info("SUCCESS : " + r.wasSuccessful());
-		// }
-		// } catch (Throwable e) {
-		// logger.error("Oh, no! Something went wrong.", e);
-		// }
-
 	}
 }
