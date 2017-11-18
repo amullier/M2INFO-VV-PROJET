@@ -49,7 +49,7 @@ public class TestRunnerImpl implements TestRunner {
 
 	}
 
-	private void addClass(Class<?> classString) {
+	private void addClass(Class classString) {
 		if (classes == null) {
 			classes = new ArrayList<>();
 		}
@@ -75,7 +75,7 @@ public class TestRunnerImpl implements TestRunner {
 		}
 	}
 
-	private void addTestClass(Class<?> testClass) {
+	private void addTestClass(Class testClass) {
 		if (testClasses == null) {
 			testClasses = new ArrayList<>();
 		}
@@ -125,6 +125,17 @@ public class TestRunnerImpl implements TestRunner {
 	public void execute() throws TestRunnerException {
 		logger.debug("Vérification des informations du TestRunner");
 
+		verifyTestRunnerForExecution();
+
+		logger.info("Recherche de la classe de test à effectuer");
+		Class testClass = getTestClassForMutant(mutantContainer);
+		if (testClass == null) {
+			logger.warn("La classe de test associée à la classe " + mutantContainer.getMutatedClass()
+					+ " n'a pas été trouvée");
+		}
+	}
+
+	private void verifyTestRunnerForExecution() throws TestRunnerException {
 		if (classes == null || classes.isEmpty()) {
 			throw new TestRunnerException("Les classes du projet ne sont pas renseignées dans le TestRunner");
 		}
@@ -139,14 +150,6 @@ public class TestRunnerImpl implements TestRunner {
 		logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClass());
 		logger.debug("Ensemble des classes : {}", classes);
 		logger.debug("Ensemble des classes de tests : {}", testClasses);
-
-		logger.info("Recherche de la classe de test à effectuer");
-		Class<?> testClass = getTestClassForMutant(mutantContainer);
-		if (testClass == null) {
-			throw new TestRunnerException("La classe de test associée à la classe " + mutantContainer.getMutatedClass()
-					+ " n'a pas été trouvée");
-		}
-
 	}
 
 	/**
