@@ -48,37 +48,33 @@ public class ClassParser {
      */
     private List<Class> loadClassFromDirectory(File directoryClass,List<String> classesName){
         List<Class> loadedClasses = new ArrayList<>();
-        URLClassLoader classLoader = null;
         try{
-
             logger.trace("Get URL from directory");
             URL url = directoryClass.toURI().toURL();
             URL[] urls = new URL[]{url};
 
-            logger.trace("Loading folder into classLoader");
-            classLoader = new URLClassLoader(urls);
-
-            logger.trace("Loading classes located in {}",directoryClass.getAbsolutePath());
-            for(String className : classesName){
-                logger.info("Loading class : {}",className);
-                loadedClasses.add(classLoader.loadClass(className));
-            }
-
+            loadingDirectoryClasses(directoryClass, classesName, loadedClasses, urls);
         } catch (ClassNotFoundException e) {
             logger.error("Class can not be load",e);
         } catch (MalformedURLException e) {
             logger.error("Directory can not be transform into URL object",e);
-        } finally {
-            if(classLoader!=null) {
-                try {
-                    classLoader.close();
-                } catch (IOException e) {
-                    logger.warn("Errors occured during ClassLoader closing",e);
-                }
-            }
         }
 
         return loadedClasses;
+    }
+
+    private void loadingDirectoryClasses(File directoryClass, List<String> classesName, List<Class> loadedClasses, URL[] urls) throws ClassNotFoundException {
+        logger.trace("Loading folder into classLoader");
+        try(URLClassLoader classLoader = new URLClassLoader(urls)) {
+            logger.trace("Loading classes located in {}", directoryClass.getAbsolutePath());
+            for (String className : classesName) {
+                logger.info("Loading class : {}", className);
+                loadedClasses.add(classLoader.loadClass(className));
+            }
+        }
+        catch (IOException e) {
+            logger.warn("Errors occured during classLoader closing");
+        }
     }
 
     /**
