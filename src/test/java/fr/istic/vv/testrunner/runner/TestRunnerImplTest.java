@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
 
 public class TestRunnerImplTest {
 
@@ -82,7 +81,7 @@ public class TestRunnerImplTest {
 
         MutantContainer mutantContainer = Mockito.mock(MutantContainer.class);
         Mockito.when(mutantContainer.getMutatedClass()).thenReturn(String.class);
-        Mockito.when(mutantContainer.getMutationDescription()).thenReturn("Une description");
+        //Mockito.when(mutantContainer.getMutationDescription()).thenReturn("Une description");
         testRunner.setMutantContainer(mutantContainer);
         assertNotNull(testRunner.getMutantContainer());
 
