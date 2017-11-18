@@ -1,5 +1,9 @@
 package fr.istic.vv.main;
 
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,20 +20,32 @@ public class Main {
 	private static String classesPath = "../VV-DUMMY-PROJET/target/classes";
 	private static String testClassesPath = "../VV-DUMMY-PROJET/target/test-classes";
 
-	public static void main(String[] args) throws Throwable {
+	public static void main(String[] args){
 		logger.info("==== V&V PROJECT : Antoine & Romain ====");
 		logger.debug("Mutation testing for project :");
-		logger.debug("Classes : {}", classesPath);
-		logger.debug("Test classes : {}", classesPath);
+		logger.debug("Classes root directory : {}", classesPath);
+		logger.debug("Test classes root directory : {}", classesPath);
+
+		// Récupération des classes
+		File classDirectory = new File(classesPath);
+		for (File classFile : classDirectory.listFiles()) {
+			logger.debug("Parsing de {}", classFile.getName());
+			classFile.getName();
+		}
 
 		// Report service initialisation
 		ReportService reportService = new ReportServiceImpl();
 
 		// Test Runner initialisation
 		TestRunner testRunner = new TestRunnerImpl();
-		testRunner.setClasses(null);
-		testRunner.setTestClasses(null);
-		testRunner.setReportService(reportService);
+		/*
+		 * testRunner.setClasses(null); testRunner.setTestClasses(null);
+		 * testRunner.setReportService(reportService);
+		 */
+	}
 
+	private static Class getClassFromFile(String fullClassName) throws Exception {
+		URLClassLoader loader = new URLClassLoader(new URL[] { new URL("file://" + fullClassName) });
+		return loader.loadClass(fullClassName);
 	}
 }
