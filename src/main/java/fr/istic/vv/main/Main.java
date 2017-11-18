@@ -3,7 +3,9 @@ package fr.istic.vv.main;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.List;
 
+import fr.istic.vv.common.ClassParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,14 +26,12 @@ public class Main {
 		logger.info("==== V&V PROJECT : Antoine & Romain ====");
 		logger.debug("Mutation testing for project :");
 		logger.debug("Classes root directory : {}", classesPath);
-		logger.debug("Test classes root directory : {}", classesPath);
+		logger.debug("Test classes root directory : {}", testClassesPath);
 
 		// Récupération des classes
-		File classDirectory = new File(classesPath);
-		for (File classFile : classDirectory.listFiles()) {
-			logger.debug("Parsing de {}", classFile.getName());
-			classFile.getName();
-		}
+		ClassParser classParser = new ClassParser();
+		List<Class> classList = classParser.getClassesFromDirectory(classesPath);
+		List<Class> testClassList = classParser.getClassesFromDirectory(testClassesPath);
 
 		// Report service initialisation
 		ReportService reportService = new ReportServiceImpl();
