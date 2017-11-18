@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -18,14 +19,7 @@ public class ClassParser {
 
     private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-    private static String PACKAGE_SEPARATOR = ".";
-
-    /**
-     * Default constructor
-     */
-    public ClassParser() {
-    }
-
+    private static final String PACKAGE_SEPARATOR = ".";
 
     /**
      * Gets class located in directoryPath
@@ -54,25 +48,34 @@ public class ClassParser {
      */
     private List<Class> loadClassFromDirectory(File directoryClass,List<String> classesName){
         List<Class> loadedClasses = new ArrayList<>();
+        URLClassLoader classLoader = null;
         try{
 
             logger.trace("Get URL from directory");
             URL url = directoryClass.toURI().toURL();
             URL[] urls = new URL[]{url};
 
-            logger.trace("Loadinf folder into classLoader");
-            ClassLoader cl = new URLClassLoader(urls);
+            logger.trace("Loading folder into classLoader");
+            classLoader = new URLClassLoader(urls);
 
             logger.trace("Loading classes located in {}",directoryClass.getAbsolutePath());
             for(String className : classesName){
                 logger.info("Loading class : {}",className);
-                loadedClasses.add(cl.loadClass(className));
+                loadedClasses.add(classLoader.loadClass(className));
             }
 
         } catch (ClassNotFoundException e) {
             logger.error("Class can not be load",e);
         } catch (MalformedURLException e) {
             logger.error("Directory can not be transform into URL object",e);
+        } finally {
+            if(classLoader!=null) {
+                try {
+                    classLoader.close();
+                } catch (IOException e) {
+                    logger.warn("Errors occured during ClassLoader closing",e);
+                }
+            }
         }
 
         return loadedClasses;
@@ -115,6 +118,11 @@ public class ClassParser {
 
     }
 
+    /**
+     * Get the class name from
+     * @param classFile
+     * @return
+     */
     private String getClassName(File classFile){
         return classFile.getName().substring(0, classFile.getName().lastIndexOf('.'));
     }

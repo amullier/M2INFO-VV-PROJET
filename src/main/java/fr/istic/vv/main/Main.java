@@ -1,18 +1,16 @@
 package fr.istic.vv.main;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.List;
-
 import fr.istic.vv.common.ClassParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.istic.vv.report.ReportService;
 import fr.istic.vv.report.ReportServiceImpl;
 import fr.istic.vv.testrunner.runner.TestRunner;
 import fr.istic.vv.testrunner.runner.TestRunnerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
 
 public class Main {
 
@@ -38,14 +36,8 @@ public class Main {
 
 		// Test Runner initialisation
 		TestRunner testRunner = new TestRunnerImpl();
-		/*
-		 * testRunner.setClasses(null); testRunner.setTestClasses(null);
-		 * testRunner.setReportService(reportService);
-		 */
-	}
-
-	private static Class getClassFromFile(String fullClassName) throws Exception {
-		URLClassLoader loader = new URLClassLoader(new URL[] { new URL("file://" + fullClassName) });
-		return loader.loadClass(fullClassName);
+		testRunner.setClasses(classList);
+		testRunner.setTestClasses(testClassList);
+		testRunner.setReportService(reportService);
 	}
 }

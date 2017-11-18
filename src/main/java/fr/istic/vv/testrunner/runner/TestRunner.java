@@ -16,14 +16,14 @@ public interface TestRunner {
 	 * 
 	 * @param classes
 	 */
-	public void setClasses(List<Class<?>> classes);
+	public void setClasses(List<Class> classes);
 
 	/**
 	 * Sets project test classes
 	 * 
 	 * @param testClasses
 	 */
-	public void setTestClasses(List<Class<?>> testClasses);
+	public void setTestClasses(List<Class> testClasses);
 
 	/**
 	 * Sets the mutantContainer for the test execution
