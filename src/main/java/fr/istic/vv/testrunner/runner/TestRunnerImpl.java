@@ -1,17 +1,13 @@
 package fr.istic.vv.testrunner.runner;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.istic.vv.common.MutantContainer;
 import fr.istic.vv.report.ReportService;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
-import fr.istic.vv.testrunner.listener.LoggingListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestRunnerImpl implements TestRunner {
 
@@ -185,10 +181,10 @@ public class TestRunnerImpl implements TestRunner {
 	 * @param testClass
 	 */
 	private void runATestClass(Class<?> testClass) {
-		JUnitCore core = new JUnitCore();
+		//JUnitCore core = new JUnitCore();
 
-		logger.info("Ajout du Listener {} pour le test", LoggingListener.class);
-		core.addListener(new LoggingListener()); // Replace LoggingListener by a useful listener
+		//logger.info("Ajout du Listener {} pour le test", LoggingListener.class);
+		//core.addListener(new LoggingListener()); // Replace LoggingListener by a useful listener
 
 		logger.info("Ajout des classes sauf celle du mutant");
 
@@ -197,7 +193,7 @@ public class TestRunnerImpl implements TestRunner {
 		logger.info("Début de l'éxécution de la classe de test : {}", testClass);
 		// FIXME : La classe ne peut pas être un string
 		// Result result = core.run(testClass);
-		Result result;
+		//Result result;
 
 		logger.info("FINISHED");
 		/*
