@@ -5,18 +5,32 @@ package fr.istic.vv.common;
  * modification description, mutated class name
  */
 public interface MutantContainer {
+	
+	public enum MutantType {
+	    ADDITION, SUBTRACTION, DIVISION, MULTIPLICATION 
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public MutantType getMutationType();
+	
+	/**
+	 * 
+	 * @param mutantType
+	 */
+	public void setMutationType(MutantType mutantType);
 
 	/**
 	 * Gets the mutation description
 	 */
-	public String getMutationDescription();
+	public String getMutationMethod();
 
 	/**
-	 * Sets the mutation description
 	 * 
-	 * @param description
+	 * @param methodName
 	 */
-	public void setMutationDescription(String description);
+	public void setMutationMethod(String methodName);
 
 	/**
 	 * Gets the mutated class
