@@ -35,7 +35,7 @@ public class ClassParser {
 
         List<String> classesName = getClassesNameFromDirectory(classDirectory);
 
-        loadClassFromDirectory(classDirectory,classesName);
+        classList = loadClassFromDirectory(classDirectory,classesName);
 
         return classList;
     }

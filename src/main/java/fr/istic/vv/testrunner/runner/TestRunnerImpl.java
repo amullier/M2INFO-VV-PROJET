@@ -3,6 +3,7 @@ package fr.istic.vv.testrunner.runner;
 import fr.istic.vv.common.MutantContainer;
 import fr.istic.vv.report.ReportService;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
+import fr.istic.vv.testrunner.listener.LoggingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,17 +44,23 @@ public class TestRunnerImpl implements TestRunner {
 	 */
 	@Override
 	public void setClasses(List<Class> classes) {
-		for (Class<?> classString : classes) {
+		for (Class classString : classes) {
 			addClass(classString);
 		}
-
+		if(classes.size() == 0){
+			logger.warn("No classes loaded during this setter call");
+		}
+		else{
+			logger.debug("{} classes are loaded in TestRunner",classes.size());
+		}
 	}
 
-	private void addClass(Class classString) {
+	private void addClass(Class clazz) {
 		if (classes == null) {
 			classes = new ArrayList<>();
 		}
-		classes.add(classString);
+		logger.debug("Adding {} to TestRunner classes collection",clazz);
+		classes.add(clazz);
 	}
 
 	/**
@@ -70,8 +77,14 @@ public class TestRunnerImpl implements TestRunner {
 	 */
 	@Override
 	public void setTestClasses(List<Class> testClasses) {
-		for (Class<?> testClass : testClasses) {
+		for (Class testClass : testClasses) {
 			addTestClass(testClass);
+		}
+		if(testClasses.size() == 0){
+			logger.warn("No test classes loaded during this setter call");
+		}
+		else{
+			logger.debug("{} test classes are loaded in TestRunner",classes.size());
 		}
 	}
 
@@ -127,12 +140,14 @@ public class TestRunnerImpl implements TestRunner {
 
 		verifyTestRunnerForExecution();
 
-		logger.info("Recherche de la classe de test à effectuer");
-		Class testClass = getTestClassForMutant(mutantContainer);
-		if (testClass == null) {
-			logger.warn("La classe de test associée à la classe " + mutantContainer.getMutatedClass()
-					+ " n'a pas été trouvée");
-		}
+//		logger.info("Recherche de la classe de test à effectuer");
+//		Class testClass = getTestClassForMutant(mutantContainer);
+//		if (testClass == null) {
+//			logger.warn("La classe de test associée à la classe " + mutantContainer.getMutatedClass()
+//					+ " n'a pas été trouvée");
+//		}
+
+		runATestClass(classes.get(0));
 	}
 
 	private void verifyTestRunnerForExecution() throws TestRunnerException {
@@ -143,11 +158,11 @@ public class TestRunnerImpl implements TestRunner {
 			throw new TestRunnerException("Les classes  de tests du projet ne sont pas renseignées dans le TestRunner");
 		}
 		if (mutantContainer == null) {
-			throw new TestRunnerException("Le mutant n'est pas renseigné dans le TestRunner");
+			//throw new TestRunnerException("Le mutant n'est pas renseigné dans le TestRunner"); //FIXME
 		}
 
 		logger.debug("Vérification terminée.");
-		logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClass());
+		//logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClass());//FIXME
 		logger.debug("Ensemble des classes : {}", classes);
 		logger.debug("Ensemble des classes de tests : {}", testClasses);
 	}
@@ -182,20 +197,17 @@ public class TestRunnerImpl implements TestRunner {
 	 * 
 	 * @param testClass
 	 */
-	private void runATestClass(Class<?> testClass) {
-		//JUnitCore core = new JUnitCore();
-
-		//logger.info("Ajout du Listener {} pour le test", LoggingListener.class);
-		//core.addListener(new LoggingListener()); // Replace LoggingListener by a useful listener
+	private void runATestClass(Class testClass) {
+		JUnitRunner jUnitRunner = new JUnitRunner();
+		jUnitRunner.addAListener(new LoggingListener());
 
 		logger.info("Ajout des classes sauf celle du mutant");
 
 		logger.info("Ajout du mutant");
 
 		logger.info("Début de l'éxécution de la classe de test : {}", testClass);
-		// FIXME : La classe ne peut pas être un string
-		// Result result = core.run(testClass);
-		//Result result;
+
+		jUnitRunner.run(testClass);
 
 		logger.info("FINISHED");
 		/*
