@@ -21,12 +21,12 @@ public interface MutantContainer {
 	/**
 	 * Gets the mutated class
 	 */
-	public Class getMutatedClass();
+	public Class<?> getMutatedClass();
 
 	/**
 	 * set the mutated class to test
 	 * 
 	 * @param mutatedClass
 	 */
-	public void setMutatedClass(Class mutatedClass);
+	public void setMutatedClass(Class<?> mutatedClass);
 }

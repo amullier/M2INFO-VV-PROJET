@@ -10,9 +10,13 @@ import java.util.jar.JarFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.istic.vv.common.MutantContainer;
+import fr.istic.vv.common.MutantContainerImpl;
 import fr.istic.vv.mutator.projet.MutateClass;
 import fr.istic.vv.mutator.projet.MutateMethod;
+import fr.istic.vv.testrunner.exception.TestRunnerException;
 import fr.istic.vv.testrunner.runner.TestRunner;
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -73,6 +77,10 @@ public class Mutator {
 					// get all methods that should be mutate
 					CtMethod[] methods = ctClass.getDeclaredMethods();
 					codeGeneration(code, mc, methods, cf);
+					/**
+					 * TODO: temporaire, pour l'instant je lance les tests une fois que tout les mutants ont été généré
+					 */
+					generateTestFromMutant(ctClass);
 				}
 			}
 		}
@@ -119,19 +127,11 @@ public class Mutator {
 				int op = ci.byteAt(index);
 				
 				// au debut crée le meme code attribute
-				mutateOp(code, op);
-				
-				
+				mutateOp(cf, ci, index, op);				
 				//
 				mm.addBytecode(op);
 				
-				//System.out.println("op : " + op + " - " + Mnemonic.OPCODE[op]);
-				if (Mnemonic.OPCODE[op].equals("dadd")) { // TODO: géré quand c'est un iadd
-					//System.out.println("c'est une addition");
-				}
 			}
-			
-			//System.out.println("le code copié :" + code.toString());
 			
 			// add the mutated method to the class ??????????????? pas très sur de son utilité ........
 			mc.addMethods(mm);
@@ -142,13 +142,64 @@ public class Mutator {
 	}
 	
 	/**
-	 * If the op must be mutate, then b will be added to it with the mutated op
-	 * @param b
+	 * 
+	 * @param cf
+	 * @param ci
+	 * @param index
 	 * @param op
 	 */
-	private void mutateOp(Bytecode b, int op) {
-		// ajout des tests pour savoir dans qu'elle operation on est
-		b.add(op);
+	private void mutateOp(ClassFile cf, CodeIterator ci, int index, int op) {
+		if (Mnemonic.OPCODE[op].toUpperCase().equals("DADD")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(103);
+			ci.write(test.get(), index);
+		}
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DSUB")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(99);
+			ci.write(test.get(), index);
+		} else if (Mnemonic.OPCODE[op].toUpperCase().equals("DMUL")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(111);
+			ci.write(test.get(), index);
+		}
+	}
+	/**
+	 * 
+	 * @param ctClass
+	 * @throws TestRunnerException
+	 * @throws CannotCompileException
+	 */
+	private void generateTestFromMutant(CtClass ctClass) throws TestRunnerException, CannotCompileException {
+		MutantContainer mutantContainer = createMutantContainer(ctClass);
+		this.testRunner.setMutantContainer(mutantContainer);
+		this.testRunner.execute();
+	}
+	/**
+	 * 
+	 * @param ctClass
+	 * @return
+	 * @throws CannotCompileException
+	 */
+	private MutantContainer createMutantContainer(CtClass ctClass) throws CannotCompileException {
+		MutantContainer m = new MutantContainerImpl();
+		m.setMutatedClass(ctClass.toClass());
+		
+		return m;
 	}
 	
 }
+//
+
+/*
+ * Pour le moment, on a une mutation total, bien sur il faut regler ce problem:
+ * 1er solution: utilisé mutateClass et mutateMethod comme memento pour revenir en arriere a chaque fois qu'un mutant est généré
+ * 
+ * 2eme solution: on stock l'index où la mutation a été appliqué, on génère le mutant, on dégèle la class, puis on remet 
+ * à l'index le code d'avant, puis on continue la génération du mutant
+ * 
+ * A faire : commencer par la seconde solution, plus simple a priori et voir si ça répond à ce qui est attendu
+ */
+
+
+//
