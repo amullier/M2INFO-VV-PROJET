@@ -31,10 +31,10 @@ import javassist.bytecode.Mnemonic;
 public class Mutator {
 
 	private static Logger logger = LoggerFactory.getLogger(Mutator.class);
-	private List<Class> classes;
+	private List<Class<?>> classes;
 	private TestRunner testRunner;
 	
-	public Mutator(List<Class> classes, TestRunner testRunner) {
+	public Mutator(List<Class<?>> classes, TestRunner testRunner) {
 		this.classes = classes;
 		this.testRunner = testRunner;
 	}
@@ -55,6 +55,7 @@ public class Mutator {
 					is = jar.getInputStream(jarEntry);
 					ClassPool cp = ClassPool.getDefault();
 					ctClass = cp.makeClass(is);
+					ctClass.stopPruning(true);
 				} catch (IOException ioex1) {
 					throw new Exception("Could not load class from JAR entry [" + jarEntry.getName() + "].");
 				} finally {
@@ -76,11 +77,7 @@ public class Mutator {
 					
 					// get all methods that should be mutate
 					CtMethod[] methods = ctClass.getDeclaredMethods();
-					codeGeneration(code, mc, methods, cf);
-					/**
-					 * TODO: temporaire, pour l'instant je lance les tests une fois que tout les mutants ont été généré
-					 */
-					generateTestFromMutant(ctClass);
+					codeGeneration(code, mc, methods, cf, ctClass);
 				}
 			}
 		}
@@ -94,16 +91,17 @@ public class Mutator {
 	 * @param mc
 	 * @param methods
 	 * @throws BadBytecode
-	 * @throws DuplicateMemberException 
+	 * @throws CannotCompileException 
+	 * @throws TestRunnerException 
 	 */
-	private void codeGeneration(Bytecode code, MutateClass mc, CtMethod[] methods, ClassFile cf) throws BadBytecode, DuplicateMemberException {
+	private void codeGeneration(Bytecode code, MutateClass mc, CtMethod[] methods, ClassFile cf, CtClass ctClass) throws BadBytecode, TestRunnerException, CannotCompileException {
 		for (CtMethod method : methods) {
 			// construction des methods a muter
 			MutateMethod mm = new MutateMethod(method.getName());
 			
 			CodeAttribute ca = method.getMethodInfo().getCodeAttribute();
 			
-			codeIterator(code, mc, mm, ca, cf);
+			codeIterator(code, mc, mm, ca, cf, ctClass);
 			
 			// on remet le code a zero
 			code = new Bytecode(cf.getConstPool());
@@ -117,9 +115,10 @@ public class Mutator {
 	 * @param mm
 	 * @param ca
 	 * @throws BadBytecode
-	 * @throws DuplicateMemberException 
+	 * @throws CannotCompileException 
+	 * @throws TestRunnerException 
 	 */
-	private void codeIterator(Bytecode code, MutateClass mc, MutateMethod mm, CodeAttribute ca, ClassFile cf) throws BadBytecode, DuplicateMemberException {
+	private void codeIterator(Bytecode code, MutateClass mc, MutateMethod mm, CodeAttribute ca, ClassFile cf, CtClass ctClass) throws BadBytecode, TestRunnerException, CannotCompileException {
 		if (ca != null) {
 			CodeIterator ci = ca.iterator();
 			while (ci.hasNext()) {
@@ -127,7 +126,7 @@ public class Mutator {
 				int op = ci.byteAt(index);
 				
 				// au debut crée le meme code attribute
-				mutateOp(cf, ci, index, op);				
+				mutateOp(cf, ci, index, op, ctClass);				
 				//
 				mm.addBytecode(op);
 				
@@ -135,9 +134,6 @@ public class Mutator {
 			
 			// add the mutated method to the class ??????????????? pas très sur de son utilité ........
 			mc.addMethods(mm);
-			/**
-			 * TODO: une fois la modif faite, crée la class puis lancé les tests
-			 */
 		}
 	}
 	
@@ -147,31 +143,70 @@ public class Mutator {
 	 * @param ci
 	 * @param index
 	 * @param op
+	 * @throws CannotCompileException 
+	 * @throws TestRunnerException 
 	 */
-	private void mutateOp(ClassFile cf, CodeIterator ci, int index, int op) {
+	private void mutateOp(ClassFile cf, CodeIterator ci, int index, int op, CtClass ctClass) throws TestRunnerException, CannotCompileException {
 		if (Mnemonic.OPCODE[op].toUpperCase().equals("DADD")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(103);
-			ci.write(test.get(), index);
+			Bytecode mutantCode = new Bytecode(cf.getConstPool());
+			mutantCode.add(103);
+			ci.write(mutantCode.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 99, index, ci, cf);
 		}
 		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DSUB")) {
 			Bytecode test = new Bytecode(cf.getConstPool());
 			test.add(99);
 			ci.write(test.get(), index);
-		} else if (Mnemonic.OPCODE[op].toUpperCase().equals("DMUL")) {
+			
+			generateMutantClassTestItAndUndo(ctClass, 103, index, ci, cf);
+			
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DMUL")) {
 			Bytecode test = new Bytecode(cf.getConstPool());
 			test.add(111);
 			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 107, index, ci, cf);
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DDIV")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(107);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf);
 		}
 	}
+	/**
+	 * generate the mutant class and then launch tests and finally undo into origine class
+	 * @param ctClass
+	 * @param baseCode
+	 * @param index
+	 * @param ci
+	 * @param cf
+	 * @throws CannotCompileException
+	 * @throws TestRunnerException
+	 */
+	private void generateMutantClassTestItAndUndo(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf) throws CannotCompileException, TestRunnerException {
+		// on génère le mutant et on lance les tests
+		Class<?> classMutant = ctClass.toClass();
+		generateTestFromMutant(classMutant);
+		ctClass.defrost();
+		
+		// on revient en arrière
+		Bytecode baseMutant = new Bytecode(cf.getConstPool());
+		baseMutant.add(baseCode);
+		ci.write(baseMutant.get(), index);
+	}
+	
 	/**
 	 * 
 	 * @param ctClass
 	 * @throws TestRunnerException
 	 * @throws CannotCompileException
 	 */
-	private void generateTestFromMutant(CtClass ctClass) throws TestRunnerException, CannotCompileException {
-		MutantContainer mutantContainer = createMutantContainer(ctClass);
+	private void generateTestFromMutant(Class<?> classMutant) throws TestRunnerException, CannotCompileException {
+		MutantContainer mutantContainer = createMutantContainer(classMutant);
 		this.testRunner.setMutantContainer(mutantContainer);
 		this.testRunner.execute();
 	}
@@ -181,9 +216,9 @@ public class Mutator {
 	 * @return
 	 * @throws CannotCompileException
 	 */
-	private MutantContainer createMutantContainer(CtClass ctClass) throws CannotCompileException {
+	private MutantContainer createMutantContainer(Class<?> classMutant) throws CannotCompileException {
 		MutantContainer m = new MutantContainerImpl();
-		m.setMutatedClass(ctClass.toClass());
+		m.setMutatedClass(classMutant);
 		
 		return m;
 	}
@@ -192,13 +227,17 @@ public class Mutator {
 //
 
 /*
+ * TODO:
  * Pour le moment, on a une mutation total, bien sur il faut regler ce problem:
  * 1er solution: utilisé mutateClass et mutateMethod comme memento pour revenir en arriere a chaque fois qu'un mutant est généré
  * 
- * 2eme solution: on stock l'index où la mutation a été appliqué, on génère le mutant, on dégèle la class, puis on remet 
+ * 2eme solution: on stock l'index où la mutation a été appliqué, on génère le mutant, on /!\dégèle/!\ la class, puis on remet 
  * à l'index le code d'avant, puis on continue la génération du mutant
  * 
  * A faire : commencer par la seconde solution, plus simple a priori et voir si ça répond à ce qui est attendu
+ * 
+ * C'est fait
+ * /!\/!\
  */
 
 
