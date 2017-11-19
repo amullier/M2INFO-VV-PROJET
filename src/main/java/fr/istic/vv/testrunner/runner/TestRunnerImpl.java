@@ -14,9 +14,9 @@ public class TestRunnerImpl implements TestRunner {
 
 	private static final Logger logger = LoggerFactory.getLogger(TestRunner.class);
 
-	private List<Class> classes;
+	private List<Class<?>> classes;
 
-	private List<Class> testClasses;
+	private List<Class<?>> testClasses;
 
 	private MutantContainer mutantContainer;
 
@@ -33,7 +33,7 @@ public class TestRunnerImpl implements TestRunner {
 	/**
 	 * @return the classes
 	 */
-	public List<Class> getClasses() {
+	public List<Class<?>> getClasses() {
 		return classes;
 	}
 
@@ -43,7 +43,7 @@ public class TestRunnerImpl implements TestRunner {
 	 * @see fr.istic.vv.testrunner.runner.TestRunner#setClasses(java.util.List)
 	 */
 	@Override
-	public void setClasses(List<Class> classes) {
+	public void setClasses(List<Class<?>> classes) {
 		for (Class classString : classes) {
 			addClass(classString);
 		}
@@ -66,7 +66,7 @@ public class TestRunnerImpl implements TestRunner {
 	/**
 	 * @return the testClasses
 	 */
-	public List<Class> getTestClasses() {
+	public List<Class<?>> getTestClasses() {
 		return testClasses;
 	}
 
@@ -76,7 +76,7 @@ public class TestRunnerImpl implements TestRunner {
 	 * @see fr.istic.vv.testrunner.runner.TestRunner#setTestClasses(java.util.List)
 	 */
 	@Override
-	public void setTestClasses(List<Class> testClasses) {
+	public void setTestClasses(List<Class<?>> testClasses) {
 		for (Class testClass : testClasses) {
 			addTestClass(testClass);
 		}

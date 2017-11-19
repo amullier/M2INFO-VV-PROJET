@@ -1,6 +1,7 @@
 package fr.istic.vv.main;
 
 import fr.istic.vv.common.ClassParser;
+import fr.istic.vv.mutator.Mutator;
 import fr.istic.vv.report.ReportService;
 import fr.istic.vv.report.ReportServiceImpl;
 import fr.istic.vv.testrunner.runner.TestRunner;
@@ -28,8 +29,8 @@ public class Main {
 
 		// Récupération des classes
 		ClassParser classParser = new ClassParser();
-		List<Class> classList = classParser.getClassesFromDirectory(classesPath);
-		List<Class> testClassList = classParser.getClassesFromDirectory(testClassesPath);
+		List<Class<?>> classList = classParser.getClassesFromDirectory(classesPath);
+		List<Class<?>> testClassList = classParser.getClassesFromDirectory(testClassesPath);
 
 		// Report service initialisation
 		ReportService reportService = new ReportServiceImpl();
@@ -39,5 +40,13 @@ public class Main {
 		testRunner.setClasses(classList);
 		testRunner.setTestClasses(testClassList);
 		testRunner.setReportService(reportService);
+		
+		// init du mutator
+		Mutator mutator = new Mutator(classList, testRunner);
+		try {
+			mutator.mutate();
+		} catch (Exception e) {
+			logger.error("[Main] Error start mutation : {}", e);
+		}
 	}
 }
