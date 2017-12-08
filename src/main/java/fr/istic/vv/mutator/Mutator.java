@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import javax.swing.plaf.synth.SynthSeparatorUI;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +35,12 @@ public class Mutator {
 	private static Logger logger = LoggerFactory.getLogger(Mutator.class);
 	private List<Class> classes;
 	private TestRunner testRunner;
+	private String classesPath;
 	
-	public Mutator(List<Class> classes, TestRunner testRunner) {
+	public Mutator(List<Class> classes, TestRunner testRunner, String classesPath) {
 		this.classes = classes;
 		this.testRunner = testRunner;
+		this.classesPath = classesPath;
 	}
 	
 	/**
@@ -44,32 +48,44 @@ public class Mutator {
 	 * @throws Exception
 	 */
 	public void mutate() throws Exception {
-		String jarFile = "../M2INFO-VV-DUMMY-PROJET/target/VV-DUMMY-PROJET-1.0-SNAPSHOT.jar";
-		JarFile jar = new JarFile(jarFile);
-		
-		Enumeration<JarEntry> jarEntries = jar.entries();
+//		String jarFile = "../M2INFO-VV-DUMMY-PROJET/target/VV-DUMMY-PROJET-1.0-SNAPSHOT.jar";
+//		JarFile jar = new JarFile(jarFile);
+//		
+//		Enumeration<JarEntry> jarEntries = jar.entries();
 
-		while (jarEntries.hasMoreElements()) {
-			final JarEntry jarEntry = jarEntries.nextElement();
-
-			if (jarEntry.getName().endsWith(".class")) {
-				InputStream is = null;
-				CtClass ctClass = null;
-				try {
-					is = jar.getInputStream(jarEntry);
-					ClassPool cp = ClassPool.getDefault();
-					ctClass = cp.makeClass(is);
-					ctClass.stopPruning(true);
-				} catch (IOException ioex1) {
-					throw new Exception("Could not load class from JAR entry [" + jarEntry.getName() + "].");
-				} finally {
-					try {
-						if (is != null)
-							is.close();
-					} catch (IOException ignored) {
-					}
-				}
-				
+//		while (jarEntries.hasMoreElements()) {
+//			final JarEntry jarEntry = jarEntries.nextElement();
+//
+//			if (jarEntry.getName().endsWith(".class")) {
+//				InputStream is = null;
+//				CtClass ctClass = null;
+//				try {
+//					is = jar.getInputStream(jarEntry);
+//					ClassPool cp = ClassPool.getDefault();
+//					ctClass = cp.makeClass(is);
+//					ctClass.stopPruning(true);
+//				} catch (IOException ioex1) {
+//					throw new Exception("Could not load class from JAR entry [" + jarEntry.getName() + "].");
+//				} finally {
+//					try {
+//						if (is != null)
+//							is.close();
+//					} catch (IOException ignored) {
+//					}
+//				}
+		for(Class cl : classes) {
+			String className;
+			String[] l = cl.getName().split("\\.");
+			if( l.length > 1 ) {
+				className = l[l.length-1];
+			} else {
+				className = l [0];
+			}
+			
+			CtClass ctClass = null;
+			ClassPool cp = ClassPool.getDefault();
+			ctClass = cp.makeClass(classesPath + "/" + className+".class");
+			ctClass.stopPruning(true);
 				if(!ctClass.isInterface()) {
 					ClassFile cf = ctClass.getClassFile();
 					logger.debug("[Mutator]ClassFile might be mutated : {}", cf);
@@ -85,8 +101,8 @@ public class Mutator {
 				}
 			}
 		}
-		jar.close();
-	}
+		// jar.close();
+	//}
 	
 
 

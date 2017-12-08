@@ -43,7 +43,7 @@ public class Main {
 		testRunner.setReportService(reportService);
 		
 		// init du mutator
-		Mutator mutator = new Mutator(classList, testRunner);
+		Mutator mutator = new Mutator(classList, testRunner, classesPath);
 		try {
 			mutator.mutate();
 		} catch (Exception e) {
