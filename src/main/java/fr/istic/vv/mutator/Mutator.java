@@ -1,5 +1,6 @@
 package fr.istic.vv.mutator;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
@@ -75,7 +76,7 @@ public class Mutator {
 			ClassPool cp = ClassPool.getDefault();
 			String classPath = classesPath + "/" + cl.getName().replaceAll("\\.","/") + ".class";
 			logger.debug("Loading class for mutation : {}",classPath);
-			ctClass = cp.makeClass(classPath);
+			ctClass = cp.makeClass(new FileInputStream(classPath));
 			ctClass.stopPruning(true);
 				if(!ctClass.isInterface()) {
 					ClassFile cf = ctClass.getClassFile();
@@ -212,7 +213,7 @@ public class Mutator {
 	private void generateMutantClassTestItAndUndo(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws CannotCompileException, TestRunnerException {
 		// on génère le mutant et on lance les tests
 		try {
-			ctClass.writeFile("/tmp/project");
+			ctClass.writeFile("/tmp/test2");
 			logger.debug("Writing class {}",ctClass);
 		} catch (IOException e) {
 			e.printStackTrace();
