@@ -9,6 +9,7 @@ import java.util.jar.JarFile;
 
 import javax.swing.plaf.synth.SynthSeparatorUI;
 
+import javassist.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,10 +20,6 @@ import fr.istic.vv.mutator.projet.MutateClass;
 import fr.istic.vv.mutator.projet.MutateMethod;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
 import fr.istic.vv.testrunner.runner.TestRunner;
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -74,17 +71,11 @@ public class Mutator {
 //					}
 //				}
 		for(Class cl : classes) {
-			String className;
-			String[] l = cl.getName().split("\\.");
-			if( l.length > 1 ) {
-				className = l[l.length-1];
-			} else {
-				className = l [0];
-			}
-			
-			CtClass ctClass = null;
+			CtClass ctClass;
 			ClassPool cp = ClassPool.getDefault();
-			ctClass = cp.makeClass(classesPath + "/" + className+".class");
+			String classPath = classesPath + "/" + cl.getName().replaceAll("\\.","/") + ".class";
+			logger.debug("Loading class for mutation : {}",classPath);
+			ctClass = cp.makeClass(classPath);
 			ctClass.stopPruning(true);
 				if(!ctClass.isInterface()) {
 					ClassFile cf = ctClass.getClassFile();
@@ -220,8 +211,14 @@ public class Mutator {
 	 */
 	private void generateMutantClassTestItAndUndo(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws CannotCompileException, TestRunnerException {
 		// on génère le mutant et on lance les tests
-		Class<?> classMutant = ctClass.toClass();
-		generateTestFromMutant(classMutant, method, m);
+		try {
+			ctClass.writeFile("/tmp/project");
+			logger.debug("Writing class {}",ctClass);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//	Class<?> classMutant = ctClass.toClass();
+	//	generateTestFromMutant(classMutant, method, m);
 		ctClass.defrost();
 		
 		// on revient en arrière

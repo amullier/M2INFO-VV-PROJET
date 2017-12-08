@@ -111,7 +111,6 @@ public class TestRunnerImpl implements TestRunner {
 	@Override
 	public void setMutantContainer(MutantContainer mutantContainer) {
 		this.mutantContainer = mutantContainer;
-
 	}
 
 	/**
@@ -146,7 +145,7 @@ public class TestRunnerImpl implements TestRunner {
 //			logger.warn("La classe de test associée à la classe " + mutantContainer.getMutatedClass()
 //					+ " n'a pas été trouvée");
 //		}
-
+		//FIXME : rechercher la bonne classe à tester
 		runATestClass(testClasses.get(1));
 	}
 
@@ -157,10 +156,9 @@ public class TestRunnerImpl implements TestRunner {
 		}
 		if (testClasses == null || testClasses.isEmpty()) {
 			throw new TestRunnerException("Project test classes are not in TestRunner");
-
 		}
 		if (mutantContainer == null) {
-			//throw new TestRunnerException("Mutated class is not in TestRunner"); //FIXME
+			throw new TestRunnerException("Mutated class is not in TestRunner");
 		}
 
 		//logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClass());//FIXME
@@ -203,8 +201,11 @@ public class TestRunnerImpl implements TestRunner {
 		jUnitRunner.addAListener(new LoggingListener());
 
 		logger.info("Ajout des classes sauf celle du mutant");
+		//TODO !
 
-		logger.info("Ajout du mutant");
+
+		logger.info("Ajout du mutant {}",mutantContainer.getMutatedClass());
+		//TODO !
 
 		logger.info("Début de l'éxécution de la classe de test : {}", testClass);
 

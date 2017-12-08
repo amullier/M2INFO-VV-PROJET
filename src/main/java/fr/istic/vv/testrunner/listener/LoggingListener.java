@@ -36,7 +36,7 @@ public class LoggingListener extends RunListener {
 
 	@Override
 	public void testFinished(Description description) throws Exception {
-		logger.info("TEST FINISHED: " + description.getDisplayName());
+		logger.info("TEST FINISHED: {}", description.toString());
 	}
 
 	@Override

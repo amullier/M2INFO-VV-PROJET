@@ -23,12 +23,14 @@ public class Main {
 	private static String testClassesPath = "../VV-DUMMY-PROJET/target/test-classes";
 
 	public static void main(String[] args){
+		definePaths(args);
+
 		logger.info("==== V&V PROJECT : Antoine & Romain ====");
 		logger.debug("Mutation testing for project :");
 		logger.debug("Classes root directory : {}", classesPath);
 		logger.debug("Test classes root directory : {}", testClassesPath);
 
-		// Récupération des classes
+		// Récupération et chargement des classes
 		ClassParser classParser = new ClassParser();
 		List<Class> classList = classParser.getClassesFromDirectory(classesPath);
 		List<Class> testClassList = classParser.getClassesFromDirectory(testClassesPath);
@@ -47,12 +49,17 @@ public class Main {
 		try {
 			mutator.mutate();
 		} catch (Exception e) {
-			logger.error("[Main] Error start mutation : {}", e);
+			logger.error("Error start mutation", e);
 		}
 		try {
 			testRunner.execute();
 		} catch (TestRunnerException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static void definePaths(String[] args) {
+		classesPath = args[0];
+		testClassesPath = args[1];
 	}
 }
