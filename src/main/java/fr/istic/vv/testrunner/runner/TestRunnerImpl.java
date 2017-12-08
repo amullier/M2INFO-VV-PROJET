@@ -136,7 +136,7 @@ public class TestRunnerImpl implements TestRunner {
 	 */
 	@Override
 	public void execute() throws TestRunnerException {
-		logger.debug("Vérification des informations du TestRunner");
+
 
 		verifyTestRunnerForExecution();
 
@@ -147,24 +147,25 @@ public class TestRunnerImpl implements TestRunner {
 //					+ " n'a pas été trouvée");
 //		}
 
-		runATestClass(classes.get(0));
+		runATestClass(testClasses.get(1));
 	}
 
 	private void verifyTestRunnerForExecution() throws TestRunnerException {
+		logger.trace("TestRunner checking");
 		if (classes == null || classes.isEmpty()) {
-			throw new TestRunnerException("Les classes du projet ne sont pas renseignées dans le TestRunner");
+			throw new TestRunnerException("Project classes are not in TestRunner");
 		}
 		if (testClasses == null || testClasses.isEmpty()) {
-			throw new TestRunnerException("Les classes  de tests du projet ne sont pas renseignées dans le TestRunner");
+			throw new TestRunnerException("Project test classes are not in TestRunner");
+
 		}
 		if (mutantContainer == null) {
-			//throw new TestRunnerException("Le mutant n'est pas renseigné dans le TestRunner"); //FIXME
+			//throw new TestRunnerException("Mutated class is not in TestRunner"); //FIXME
 		}
 
-		logger.debug("Vérification terminée.");
 		//logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClass());//FIXME
-		logger.debug("Ensemble des classes : {}", classes);
-		logger.debug("Ensemble des classes de tests : {}", testClasses);
+		logger.debug("Classes : {}", classes);
+		logger.debug("Test classes : {}", testClasses);
 	}
 
 	/**
@@ -207,7 +208,7 @@ public class TestRunnerImpl implements TestRunner {
 
 		logger.info("Début de l'éxécution de la classe de test : {}", testClass);
 
-		jUnitRunner.run(testClass);
+		jUnitRunner.run(classes,testClass);
 
 		logger.info("FINISHED");
 		/*

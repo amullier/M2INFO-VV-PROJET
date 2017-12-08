@@ -4,6 +4,7 @@ import fr.istic.vv.common.ClassParser;
 import fr.istic.vv.mutator.Mutator;
 import fr.istic.vv.report.ReportService;
 import fr.istic.vv.report.ReportServiceImpl;
+import fr.istic.vv.testrunner.exception.TestRunnerException;
 import fr.istic.vv.testrunner.runner.TestRunner;
 import fr.istic.vv.testrunner.runner.TestRunnerImpl;
 import org.slf4j.Logger;
@@ -47,6 +48,11 @@ public class Main {
 			mutator.mutate();
 		} catch (Exception e) {
 			logger.error("[Main] Error start mutation : {}", e);
+		}
+		try {
+			testRunner.execute();
+		} catch (TestRunnerException e) {
+			e.printStackTrace();
 		}
 	}
 }

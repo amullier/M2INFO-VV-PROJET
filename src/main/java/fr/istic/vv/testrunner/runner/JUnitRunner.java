@@ -1,10 +1,14 @@
 package fr.istic.vv.testrunner.runner;
 
+import org.junit.internal.requests.ClassRequest;
 import org.junit.runner.JUnitCore;
+import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.notification.RunListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Runner tool with junit
@@ -36,12 +40,14 @@ public class JUnitRunner {
         }
     }
 
-    public void run(Class runClass){
+    public void run(List<Class> classes, Class runClass){
         if(runClass.isInterface()){
             logger.debug("{} is an interface no test will be run");
         }
         else{
+
             Result result = jUnitCore.run(runClass);
+
         }
     }
 }

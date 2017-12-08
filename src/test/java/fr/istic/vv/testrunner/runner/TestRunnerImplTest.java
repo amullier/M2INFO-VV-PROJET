@@ -50,11 +50,11 @@ public class TestRunnerImplTest {
         List<Class> classList = new ArrayList<>();
         classList.add(class1);
         classList.add(class2);
-        testRunner.setClasses(classList);
+        //testRunner.setClasses(classList);
 
         List<Class> testClassList = new ArrayList<>();
         testClassList.add(class3);
-        testRunner.setTestClasses(testClassList);
+        //testRunner.setTestClasses(testClassList);
 
         assertNotNull(testRunner.getClasses());
         assertNotNull(testRunner.getTestClasses());
@@ -70,17 +70,17 @@ public class TestRunnerImplTest {
         List<Class> classList = new ArrayList<>();
         classList.add(class1);
         classList.add(class2);
-        testRunner.setClasses(classList);
+        //testRunner.setClasses(classList);
 
         List<Class> testClassList = new ArrayList<>();
         testClassList.add(class3);
-        testRunner.setTestClasses(testClassList);
+        //testRunner.setTestClasses(testClassList);
 
         assertNotNull(testRunner.getClasses());
         assertNotNull(testRunner.getTestClasses());
 
         MutantContainer mutantContainer = Mockito.mock(MutantContainer.class);
-        Mockito.when(mutantContainer.getMutatedClass()).thenReturn(String.class);
+        //Mockito.when(mutantContainer.getMutatedClass()).thenReturn(String.class);
         //Mockito.when(mutantContainer.getMutationDescription()).thenReturn("Une description");
         testRunner.setMutantContainer(mutantContainer);
         assertNotNull(testRunner.getMutantContainer());
