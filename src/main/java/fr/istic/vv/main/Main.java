@@ -30,8 +30,8 @@ public class Main {
 
 		// Récupération des classes
 		ClassParser classParser = new ClassParser();
-		List<Class<?>> classList = classParser.getClassesFromDirectory(classesPath);
-		List<Class<?>> testClassList = classParser.getClassesFromDirectory(testClassesPath);
+		List<Class> classList = classParser.getClassesFromDirectory(classesPath);
+		List<Class> testClassList = classParser.getClassesFromDirectory(testClassesPath);
 
 		// Report service initialisation
 		ReportService reportService = new ReportServiceImpl();

@@ -27,8 +27,8 @@ public class ClassParser {
      * @param directoryPath
      * @return classes list
      */
-    public List<Class<?>> getClassesFromDirectory(String directoryPath){
-        List<Class<?>> classList = new ArrayList<>();
+    public List<Class> getClassesFromDirectory(String directoryPath){
+        List<Class> classList = new ArrayList<>();
 
         logger.info("Class parsing into {}",directoryPath);
         File classDirectory = new File(directoryPath);
@@ -46,8 +46,8 @@ public class ClassParser {
      * @param classesName
      * @return classes list
      */
-    private List<Class<?>> loadClassFromDirectory(File directoryClass,List<String> classesName){
-        List<Class<?>> loadedClasses = new ArrayList<>();
+    private List<Class> loadClassFromDirectory(File directoryClass,List<String> classesName){
+        List<Class> loadedClasses = new ArrayList<>();
         try{
             logger.trace("Get URL from directory");
             URL url = directoryClass.toURI().toURL();
@@ -63,7 +63,7 @@ public class ClassParser {
         return loadedClasses;
     }
 
-    private void loadingDirectoryClasses(File directoryClass, List<String> classesName, List<Class<?>> loadedClasses, URL[] urls) throws ClassNotFoundException {
+    private void loadingDirectoryClasses(File directoryClass, List<String> classesName, List<Class> loadedClasses, URL[] urls) throws ClassNotFoundException {
         logger.trace("Loading folder into classLoader");
         try(URLClassLoader classLoader = new URLClassLoader(urls)) {
             logger.trace("Loading classes located in {}", directoryClass.getAbsolutePath());

@@ -31,10 +31,10 @@ import javassist.bytecode.Mnemonic;
 public class Mutator {
 
 	private static Logger logger = LoggerFactory.getLogger(Mutator.class);
-	private List<Class<?>> classes;
+	private List<Class> classes;
 	private TestRunner testRunner;
 	
-	public Mutator(List<Class<?>> classes, TestRunner testRunner) {
+	public Mutator(List<Class> classes, TestRunner testRunner) {
 		this.classes = classes;
 		this.testRunner = testRunner;
 	}
@@ -230,11 +230,11 @@ public class Mutator {
 	}
 	/**
 	 * 
-	 * @param ctClass
+	 * @param classMutant
 	 * @return
 	 * @throws CannotCompileException
 	 */
-	private MutantContainer createMutantContainer(Class<?> classMutant, CtMethod method, MutantType mt) throws CannotCompileException {
+	private MutantContainer createMutantContainer(Class classMutant, CtMethod method, MutantType mt) throws CannotCompileException {
 		MutantContainer m = new MutantContainerImpl();
 		m.setMutatedClass(classMutant);
 		m.setMutationMethod(method.getName());
