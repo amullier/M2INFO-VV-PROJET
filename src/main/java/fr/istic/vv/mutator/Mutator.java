@@ -212,14 +212,8 @@ public class Mutator {
 	 */
 	private void generateMutantClassTestItAndUndo(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws CannotCompileException, TestRunnerException {
 		// on génère le mutant et on lance les tests
-		try {
-			ctClass.writeFile("/tmp/test2");
-			logger.debug("Writing class {}",ctClass);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		//	Class<?> classMutant = ctClass.toClass();
-	//	generateTestFromMutant(classMutant, method, m);
+		Class<?> classMutant = ctClass.toClass();
+		generateTestFromMutant(classMutant, method, m);
 		ctClass.defrost();
 		
 		// on revient en arrière
@@ -236,7 +230,7 @@ public class Mutator {
 	 * @throws CannotCompileException
 	 */
 	private void generateTestFromMutant(Class<?> classMutant, CtMethod method, MutantType m) throws TestRunnerException, CannotCompileException {
-		MutantContainer mutantContainer = createMutantContainer(classMutant, method, m);
+		MutantContainer mutantContainer = createMutantContainer(classMutant, method, m); //FIXME : c'est null !!
 		this.testRunner.setMutantContainer(mutantContainer);
 		logger.debug("[Mutator]Start TestRunner on : {}", classMutant);
 		this.testRunner.execute();
