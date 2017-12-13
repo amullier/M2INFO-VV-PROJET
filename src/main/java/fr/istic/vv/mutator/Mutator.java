@@ -185,14 +185,14 @@ public class Mutator {
 	 */
 	private void generateMutantClassTestItAndUndo(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws CannotCompileException, TestRunnerException {
 		// on génère le mutant et on lance les tests
-		Class classMutant = ctClass.toClass();
+		//Class classMutant = ctClass.toClass();
 		//generateTestFromMutant(classMutant, method, m);
 		try {
 			ctClass.writeFile("TargetProject/target/classes");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		generateTestFromMutant(classMutant.getName(), method, m);
+		generateTestFromMutant(ctClass.getName(), method, m);
 		ctClass.defrost();
 		// on revient en arrière
 		Bytecode baseMutant = new Bytecode(cf.getConstPool());
