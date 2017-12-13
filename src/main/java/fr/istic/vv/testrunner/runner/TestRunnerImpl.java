@@ -1,9 +1,9 @@
 package fr.istic.vv.testrunner.runner;
 
 import fr.istic.vv.common.MutantContainer;
+import fr.istic.vv.report.Report;
 import fr.istic.vv.report.ReportService;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
-import fr.istic.vv.testrunner.listener.LoggingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,18 +137,9 @@ public class TestRunnerImpl implements TestRunner {
 	 */
 	@Override
 	public void execute() throws TestRunnerException {
-
-
 		verifyTestRunnerForExecution();
 
-//		logger.info("Recherche de la classe de test à effectuer");
-//		Class testClass = getTestClassForMutant(mutantContainer);
-//		if (testClass == null) {
-//			logger.warn("La classe de test associée à la classe " + mutantContainer.getMutatedClass()
-//					+ " n'a pas été trouvée");
-//		}
-		//FIXME : rechercher la bonne classe à tester
-		runATestClass(testClasses.get(1));
+		runTest();
 	}
 
 	private void verifyTestRunnerForExecution() throws TestRunnerException {
@@ -160,7 +151,7 @@ public class TestRunnerImpl implements TestRunner {
 			throw new TestRunnerException("Project test classes are not in TestRunner");
 		}
 		if (mutantContainer == null) {
-			//throw new TestRunnerException("Mutated class is not in TestRunner");
+			throw new TestRunnerException("Mutated class is not in TestRunner");
 		}
 
 		//logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClass());//FIXME
@@ -169,43 +160,18 @@ public class TestRunnerImpl implements TestRunner {
 	}
 
 	/**
-	 * Search into test classes the test class corresponding to the mutant
-	 * 
-	 * @param mutantContainer
-	 *            : the mutant
-	 * @return the test class name or null if not find
-	 */
-	private Class getTestClassForMutant(MutantContainer mutantContainer) {
-		String originalClass = mutantContainer.getMutatedClass();
-		logger.info("Recherche du test de {}", originalClass);
-
-		String searchTestClassName = originalClass + "Test";
-		logger.info("Nom de la classe de test à rechercher : {}", searchTestClassName);
-
-		for (Class testClass : testClasses) {
-			//A revoir
-//			if (testClass.equals(searchTestClassName)) {
-//				logger.debug("Classe de test trouvée dans les classes de test du projet");
-//				return testClass;
-//			}
-		}
-		logger.debug("La classe de test n'a pas été trouvée");
-		return null;
-	}
-
-	/**
 	 * Run a test class with the mutated class
-	 * 
-	 * @param testClass
 	 */
-	private void runATestClass(Class testClass) {
+	private void runTest() {
 		try {
 			Process p = Runtime.getRuntime().exec("mvn test -f TargetProject/pom.xml");
 			if(!p.waitFor(2, TimeUnit.MINUTES)) {
 				p.destroy();
 			}
 			int returnValue = p.exitValue();
-			logger.info("Mutation testing result : {}",returnValue);
+
+			reportService.addReport(new Report(returnValue == 0,mutantContainer));
+
 		} catch (IOException e) {
 			logger.warn("An error occured during testing",e);
 		} catch (InterruptedException e) {

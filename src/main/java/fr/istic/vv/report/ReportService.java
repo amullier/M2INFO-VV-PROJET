@@ -19,4 +19,5 @@ public interface ReportService {
 	 */
 	public String toMarkdown();
 
+    String toCSV();
 }

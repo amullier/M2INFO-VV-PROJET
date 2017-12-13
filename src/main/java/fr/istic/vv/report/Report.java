@@ -1,5 +1,7 @@
 package fr.istic.vv.report;
 
+import fr.istic.vv.common.MutantContainer;
+
 /**
  * Report describes informations from execution of test classes with a mutated
  * class
@@ -8,42 +10,27 @@ public class Report {
 
 	private boolean isMutantAlive;
 
-	private String mutationDescription;
+	private MutantContainer mutantContainer;
 
-	public Report(boolean isMutantAlive, String mutationDescription) {
+	public Report(boolean isMutantAlive, MutantContainer mutantContainer) {
 		super();
 		this.isMutantAlive = isMutantAlive;
-		this.mutationDescription = mutationDescription;
+		this.mutantContainer = mutantContainer;
 	}
 
-	/**
-	 * @return the isMutantAlive
-	 */
 	public boolean isMutantAlive() {
 		return isMutantAlive;
 	}
 
-	/**
-	 * @param isMutantAlive
-	 *            the isMutantAlive to set
-	 */
 	public void setMutantAlive(boolean isMutantAlive) {
 		this.isMutantAlive = isMutantAlive;
 	}
 
-	/**
-	 * @return the mutationDescription
-	 */
-	public String getMutationDescription() {
-		return mutationDescription;
+	public MutantContainer getMutantContainer() {
+		return mutantContainer;
 	}
 
-	/**
-	 * @param mutationDescription
-	 *            the mutationDescription to set
-	 */
-	public void setMutationDescription(String mutationDescription) {
-		this.mutationDescription = mutationDescription;
+	public void setMutantContainer(MutantContainer mutantContainer) {
+		this.mutantContainer = mutantContainer;
 	}
-
 }

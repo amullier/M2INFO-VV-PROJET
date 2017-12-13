@@ -10,9 +10,19 @@ import fr.istic.vv.testrunner.runner.TestRunnerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
@@ -47,19 +57,28 @@ public class Main {
 		// init du mutator
 		Mutator mutator = new Mutator(classList, testRunner, classesPath);
 		try {
-			//mutator.mutate();
+			mutator.mutate();
 		} catch (Exception e) {
 			logger.error("Error start mutation", e);
 		}
+
+
 		try {
-			testRunner.execute();
-		} catch (TestRunnerException e) {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report"+ System.currentTimeMillis()+".csv"));
+			writer.write(reportService.toCSV());
+			writer.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private static void definePaths(String[] args) {
-		classesPath = args[0];
-		testClassesPath = args[1];
+		if(args!=null && args[0]!=null){
+			classesPath = args[0];
+
+		}
+		if(args!=null && args[1]!=null) {
+			testClassesPath = args[1];
+		}
 	}
 }
