@@ -189,15 +189,18 @@ public class Mutator {
 		//generateTestFromMutant(classMutant, method, m);
 		try {
 			ctClass.writeFile("TargetProject/target/classes");
+			generateTestFromMutant(ctClass.getName(), method, m);
+			ctClass.defrost();
+			// on revient en arrière
+			Bytecode baseMutant = new Bytecode(cf.getConstPool());
+			baseMutant.add(baseCode);
+			ci.write(baseMutant.get(), index);
+			// remettre la class dans son etat de base
+			ctClass.writeFile("TargetProject/target/classes");
+			ctClass.defrost();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		generateTestFromMutant(ctClass.getName(), method, m);
-		ctClass.defrost();
-		// on revient en arrière
-		Bytecode baseMutant = new Bytecode(cf.getConstPool());
-		baseMutant.add(baseCode);
-		ci.write(baseMutant.get(), index);
 	}
 	
 	/**

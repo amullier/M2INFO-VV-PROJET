@@ -33,7 +33,7 @@ public class Main {
 	private static String testClassesPath = "./TargetProject/target/classes";
 
 	public static void main(String[] args){
-		definePaths(args);
+		//definePaths(args);
 
 		logger.info("==== V&V PROJECT : Antoine & Romain ====");
 		logger.debug("Mutation testing for project :");
