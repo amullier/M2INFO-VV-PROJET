@@ -68,7 +68,7 @@ public class ClassParser {
         try(URLClassLoader classLoader = new URLClassLoader(urls)) {
             logger.trace("Loading classes located in {}", directoryClass.getAbsolutePath());
             for (String className : classesName) {
-                logger.info("Loading class : {}", className);
+                logger.trace("Loading class : {}", className);
                 loadedClasses.add(classLoader.loadClass(className));
             }
         }

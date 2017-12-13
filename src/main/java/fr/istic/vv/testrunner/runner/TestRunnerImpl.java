@@ -61,7 +61,7 @@ public class TestRunnerImpl implements TestRunner {
 		if (classes == null) {
 			classes = new ArrayList<>();
 		}
-		logger.debug("Adding {} to TestRunner classes collection",clazz);
+		logger.trace("Adding {} to TestRunner classes collection",clazz);
 		classes.add(clazz);
 	}
 
@@ -201,16 +201,15 @@ public class TestRunnerImpl implements TestRunner {
 	private void runATestClass(Class testClass) {
 		try {
 			Process p = Runtime.getRuntime().exec("mvn test -f TargetProject/pom.xml");
-			if(!p.waitFor(1, TimeUnit.MINUTES)) {
-				//timeout - kill the process.
-				p.destroy(); // consider using destroyForcibly instead
+			if(!p.waitFor(2, TimeUnit.MINUTES)) {
+				p.destroy();
 			}
-			int i = p.exitValue();
-			logger.info("i = {}",i);
+			int returnValue = p.exitValue();
+			logger.info("Mutation testing result : {}",returnValue);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warn("An error occured during testing",e);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			logger.warn("An error occured during testing",e);
 		}
 	}
 
