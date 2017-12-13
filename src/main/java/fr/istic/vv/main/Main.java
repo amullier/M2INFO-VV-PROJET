@@ -19,8 +19,8 @@ public class Main {
 	private static Logger logger = LoggerFactory.getLogger(Main.class);
 
 	// Add parameter in main to make project generic for all projects
-	private static String classesPath = "../VV-DUMMY-PROJET/target/classes";
-	private static String testClassesPath = "../VV-DUMMY-PROJET/target/test-classes";
+	private static String classesPath = "./TargetProject/target/classes";
+	private static String testClassesPath = "./TargetProject/target/classes";
 
 	public static void main(String[] args){
 		definePaths(args);
@@ -47,7 +47,7 @@ public class Main {
 		// init du mutator
 		Mutator mutator = new Mutator(classList, testRunner, classesPath);
 		try {
-			mutator.mutate();
+			//mutator.mutate();
 		} catch (Exception e) {
 			logger.error("Error start mutation", e);
 		}

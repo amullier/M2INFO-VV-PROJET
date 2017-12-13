@@ -7,8 +7,10 @@ import fr.istic.vv.testrunner.listener.LoggingListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class TestRunnerImpl implements TestRunner {
 
@@ -158,7 +160,7 @@ public class TestRunnerImpl implements TestRunner {
 			throw new TestRunnerException("Project test classes are not in TestRunner");
 		}
 		if (mutantContainer == null) {
-			throw new TestRunnerException("Mutated class is not in TestRunner");
+			//throw new TestRunnerException("Mutated class is not in TestRunner");
 		}
 
 		//logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClass());//FIXME
@@ -197,26 +199,19 @@ public class TestRunnerImpl implements TestRunner {
 	 * @param testClass
 	 */
 	private void runATestClass(Class testClass) {
-		JUnitRunner jUnitRunner = new JUnitRunner();
-		jUnitRunner.addAListener(new LoggingListener());
-
-		logger.info("Ajout des classes sauf celle du mutant");
-		//TODO !
-
-
-		logger.info("Ajout du mutant {}",mutantContainer.getMutatedClass());
-		//TODO !
-
-		logger.info("Début de l'éxécution de la classe de test : {}", testClass);
-
-		jUnitRunner.run(classes,testClass);
-
-		logger.info("FINISHED");
-		/*
-		 * logger.info("IGNORED: {}", result.getIgnoreCount());
-		 * logger.info("FAILURES: {}", result.getFailureCount());
-		 * logger.info("IGNORED: {}", result.getRunCount());
-		 */
+		try {
+			Process p = Runtime.getRuntime().exec("mvn test -f TargetProject/pom.xml");
+			if(!p.waitFor(1, TimeUnit.MINUTES)) {
+				//timeout - kill the process.
+				p.destroy(); // consider using destroyForcibly instead
+			}
+			int i = p.exitValue();
+			logger.info("i = {}",i);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
