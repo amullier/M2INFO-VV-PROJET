@@ -129,6 +129,11 @@ public class ClassParser {
      * @return
      */
     private String getClassName(File classFile){
-        return classFile.getName().substring(0, classFile.getName().lastIndexOf('.'));
+        if(classFile.getName().lastIndexOf('.')!=-1){
+            return classFile.getName().substring(0, classFile.getName().lastIndexOf('.'));
+        }
+        else{
+            return classFile.getName();
+        }
     }
 }
