@@ -39,7 +39,9 @@ public interface TestRunner {
 	 */
 	public void setReportService(ReportService reportService);
 
-	/**
+    void setRootProjectPath(String rootProjectPath);
+
+    /**
 	 * Run tests in project test classes
 	 * 
 	 * @pre Classes, TestClasses and MutantContainer must not be empty

@@ -12,171 +12,140 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * TestRunner is in charge to run tests on the target project
+ * defined in the Main
+ *
+ * The execute() call is sent by the Mutator
+ */
 public class TestRunnerImpl implements TestRunner {
 
-	private static final Logger logger = LoggerFactory.getLogger(TestRunner.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestRunner.class);
 
-	private List<Class> classes;
+    private List<Class> classes;
 
-	private List<Class<?>> testClasses;
+    private List<Class<?>> testClasses;
 
-	private MutantContainer mutantContainer;
+    private MutantContainer mutantContainer;
 
-	private ReportService reportService;
+    private ReportService reportService;
 
-	/**
-	 * Constructor instanciates list classes
-	 */
-	public TestRunnerImpl() {
-		classes = new ArrayList<>();
-		testClasses = new ArrayList<>();
-	}
+    private String rootProjectPath;
 
-	/**
-	 * @return the classes
-	 */
-	public List<Class> getClasses() {
-		return classes;
-	}
+    /**
+     * Constructor instantiates list classes
+     */
+    public TestRunnerImpl() {
+        classes = new ArrayList<>();
+        testClasses = new ArrayList<>();
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see fr.istic.vv.testrunner.runner.TestRunner#setClasses(java.util.List)
-	 */
-	@Override
-	public void setClasses(List<Class> classes) {
-		for (Class classString : classes) {
-			addClass(classString);
-		}
-		if(classes.size() == 0){
-			logger.warn("No classes loaded during this setter call");
-		}
-		else{
-			logger.debug("{} classes are loaded in TestRunner",classes.size());
-		}
-	}
+    public List<Class> getClasses() {
+        return classes;
+    }
 
-	private void addClass(Class clazz) {
-		if (classes == null) {
-			classes = new ArrayList<>();
-		}
-		logger.trace("Adding {} to TestRunner classes collection",clazz);
-		classes.add(clazz);
-	}
+    @Override
+    public void setClasses(List<Class> classes) {
+        for (Class classString : classes) {
+            addClass(classString);
+        }
+        if (classes.size() == 0) {
+            logger.warn("No classes loaded during this setter call");
+        } else {
+            logger.debug("{} classes are loaded in TestRunner", classes.size());
+        }
+    }
 
-	/**
-	 * @return the testClasses
-	 */
-	public List<Class<?>> getTestClasses() {
-		return testClasses;
-	}
+    private void addClass(Class clazz) {
+        if (classes == null) {
+            classes = new ArrayList<>();
+        }
+        logger.trace("Adding {} to TestRunner classes collection", clazz);
+        classes.add(clazz);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see fr.istic.vv.testrunner.runner.TestRunner#setTestClasses(java.util.List)
-	 */
-	@Override
-	public void setTestClasses(List<Class> testClasses) {
-		for (Class testClass : testClasses) {
-			addTestClass(testClass);
-		}
-		if(testClasses.size() == 0){
-			logger.warn("No test classes loaded during this setter call");
-		}
-		else{
-			logger.debug("{} test classes are loaded in TestRunner",classes.size());
-		}
-	}
+    public List<Class<?>> getTestClasses() {
+        return testClasses;
+    }
 
-	private void addTestClass(Class testClass) {
-		if (testClasses == null) {
-			testClasses = new ArrayList<>();
-		}
-		testClasses.add(testClass);
-	}
+    @Override
+    public void setTestClasses(List<Class> testClasses) {
+        for (Class testClass : testClasses) {
+            addTestClass(testClass);
+        }
+        if (testClasses.size() == 0) {
+            logger.warn("No test classes loaded during this setter call");
+        } else {
+            logger.debug("{} test classes are loaded in TestRunner", classes.size());
+        }
+    }
 
-	/**
-	 * @return the mutantContainer
-	 */
-	public MutantContainer getMutantContainer() {
-		return mutantContainer;
-	}
+    private void addTestClass(Class testClass) {
+        if (testClasses == null) {
+            testClasses = new ArrayList<>();
+        }
+        testClasses.add(testClass);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see fr.istic.vv.testrunner.runner.TestRunner#setMutantContainer(fr.istic.vv.
-	 * common.MutantContainer)
-	 */
-	@Override
-	public void setMutantContainer(MutantContainer mutantContainer) {
-		this.mutantContainer = mutantContainer;
-	}
+    public MutantContainer getMutantContainer() {
+        return mutantContainer;
+    }
 
-	/**
-	 * @return the reportService
-	 */
-	public ReportService getReportService() {
-		return reportService;
-	}
+    @Override
+    public void setMutantContainer(MutantContainer mutantContainer) {
+        this.mutantContainer = mutantContainer;
+    }
 
-	/**
-	 * @param reportService
-	 *            the reportService to set
-	 */
-	public void setReportService(ReportService reportService) {
-		this.reportService = reportService;
-	}
+    @Override
+    public void setReportService(ReportService reportService) {
+        this.reportService = reportService;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see fr.istic.vv.testrunner.runner.TestRunner#runTests()
-	 */
-	@Override
-	public void execute() throws TestRunnerException {
-		verifyTestRunnerForExecution();
+    @Override
+    public void setRootProjectPath(String rootProjectPath) {
+        this.rootProjectPath = rootProjectPath;
+    }
 
-		runTest();
-	}
+    @Override
+    public void execute() throws TestRunnerException {
+        verifyTestRunnerForExecution();
 
-	private void verifyTestRunnerForExecution() throws TestRunnerException {
-		logger.trace("TestRunner checking");
-		if (classes == null || classes.isEmpty()) {
-			throw new TestRunnerException("Project classes are not in TestRunner");
-		}
-		if (testClasses == null || testClasses.isEmpty()) {
-			throw new TestRunnerException("Project test classes are not in TestRunner");
-		}
-		if (mutantContainer == null) {
-			throw new TestRunnerException("Mutated class is not in TestRunner");
-		}
+        runTest();
+    }
 
-		//logger.debug("MUTANT sur la classe : {}", mutantContainer.getMutatedClass());//FIXME
-		logger.debug("Classes : {}", classes);
-		logger.debug("Test classes : {}", testClasses);
-	}
+    private void verifyTestRunnerForExecution() throws TestRunnerException {
+        logger.trace("TestRunner checking");
+        if (classes == null || classes.isEmpty()) {
+            throw new TestRunnerException("Project classes are not in TestRunner");
+        }
+        if (testClasses == null || testClasses.isEmpty()) {
+            throw new TestRunnerException("Project test classes are not in TestRunner");
+        }
+        if (mutantContainer == null) {
+            throw new TestRunnerException("Mutated class is not in TestRunner");
+        }
 
-	/**
-	 * Run a test class with the mutated class
-	 */
-	private void runTest() {
-		try {
-			Process p = Runtime.getRuntime().exec("mvn test -f TargetProject/pom.xml");
-			if(!p.waitFor(2, TimeUnit.MINUTES)) {
-				p.destroy();
-			}
-			int returnValue = p.exitValue();
+        logger.debug("Verification OK for running tests on project.");
+    }
 
-			reportService.addReport(new Report(returnValue == 0,mutantContainer));
+    /**
+     * Run a test class with the mutated class
+     */
+    private void runTest() {
+        logger.info("Starting testing with MAVEN on {}", rootProjectPath);
+        try {
+            Process p = Runtime.getRuntime().exec("mvn test -f " + rootProjectPath + "/pom.xml");
+            if (!p.waitFor(2, TimeUnit.MINUTES)) {
+                p.destroy();
+            }
+            int returnValue = p.exitValue(); //This block the execution but it is expected
+            reportService.addReport(new Report(returnValue == 0, mutantContainer));
 
-		} catch (IOException e) {
-			logger.warn("An error occured during testing",e);
-		} catch (InterruptedException e) {
-			logger.warn("An error occured during testing",e);
-		}
-	}
+        } catch (IOException e) {
+            logger.warn("An error occured during testing", e);
+        } catch (InterruptedException e) {
+            logger.warn("An error occured during testing", e);
+        }
+    }
 
 }

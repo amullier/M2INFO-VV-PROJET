@@ -12,14 +12,13 @@ public interface ReportService {
 	 */
 	public void addReport(Report report);
 
-	/**
-	 * Returns all report informations in a markdown format
-	 * 
-	 * @return
-	 */
-	public String toMarkdown();
+    void generateHTML();
 
-    String toCSV();
+	void generateCSV();
 
-    String toHTML();
+	void startMutationTesting();
+
+	void stopMutationTesting();
+
+	void setProjectName(String projectName);
 }

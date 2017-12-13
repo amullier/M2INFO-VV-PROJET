@@ -28,9 +28,10 @@ public class Main {
 
 	private static Logger logger = LoggerFactory.getLogger(Main.class);
 
-	// Add parameter in main to make project generic for all projects
-	private static String classesPath = "./TargetProject/target/classes";
-	private static String testClassesPath = "./TargetProject/target/classes";
+	//Default values for classes and test classes directories
+	private static String rootPath = "./TargetProject/";
+	private static String classesPath = rootPath+"target/classes";
+	private static String testClassesPath = rootPath +"target/classes";
 
 	public static void main(String[] args){
 		definePaths(args);
@@ -40,51 +41,51 @@ public class Main {
 		logger.debug("Classes root directory : {}", classesPath);
 		logger.debug("Test classes root directory : {}", testClassesPath);
 
-		// Récupération et chargement des classes
+		// Project parsing to find classes list
 		ClassParser classParser = new ClassParser();
 		List<Class> classList = classParser.getClassesFromDirectory(classesPath);
 		List<Class> testClassList = classParser.getClassesFromDirectory(testClassesPath);
 
-		// Report service initialisation
+		// Report service initialization
 		ReportService reportService = new ReportServiceImpl();
+		reportService.setProjectName(rootPath);
 
-		// Test Runner initialisation
+		// Test Runner initialization
 		TestRunner testRunner = new TestRunnerImpl();
+		testRunner.setRootProjectPath(rootPath);
 		testRunner.setClasses(classList);
 		testRunner.setTestClasses(testClassList);
 		testRunner.setReportService(reportService);
 
-		// init du mutator
+		//Mutator initialization
 		Mutator mutator = new Mutator(classList, testRunner, classesPath);
 		try {
+			reportService.startMutationTesting();
 			mutator.mutate();
 		} catch (Exception e) {
 			logger.error("Error start mutation", e);
 		}
+		reportService.stopMutationTesting();
 
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ System.currentTimeMillis()+".csv"));
-			writer.write(reportService.toCSV());
-			writer.close();
-		} catch (IOException e) {
-			logger.error("Reporting error during file writing",e);
-		}
 
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ System.currentTimeMillis()+".html"));
-			writer.write(reportService.toHTML());
-			writer.close();
-		} catch (IOException e) {
-			logger.error("Reporting error during file writing",e);
-		}
+		reportService.generateCSV();
+		reportService.generateHTML();
 	}
 
+	/**
+	 * Static method defines project directories (classes directory and test classes directory
+	 * This method presumes that project is built with a maven architecture
+	 *
+	 * @param args : Main arguments
+	 */
 	private static void definePaths(String[] args) {
-		if(args!=null && args.length>=1 && args[0]!=null){
-			classesPath = args[0];
+		if(args!=null && args.length>=1 && args[0]!=null) {
+			rootPath = args[0];
+			classesPath = rootPath + "/target/classes";
+			testClassesPath = rootPath + "/target/test-classes";
 		}
-		if(args!=null && args.length>=2 && args[1]!=null) {
-			testClassesPath = args[1];
+		else{
+			logger.warn("Main parameters does not define project to test. Default is set.");
 		}
 	}
 }
