@@ -68,8 +68,17 @@ public class ClassParser {
         try(URLClassLoader classLoader = new URLClassLoader(urls)) {
             logger.trace("Loading classes located in {}", directoryClass.getAbsolutePath());
             for (String className : classesName) {
-                logger.trace("Loading class : {}", className);
-                loadedClasses.add(classLoader.loadClass(className));
+                try{
+                    Class theClass = classLoader.loadClass(className);
+                    logger.debug("Loading class : {}", className);
+                    loadedClasses.add(theClass);
+                }
+                catch(ClassNotFoundException e){
+                    logger.debug("The file {} can not be loaded",className,e);
+                }
+                catch(NoClassDefFoundError e){
+                    logger.debug("The file {} can not be loaded",className,e);
+                }
             }
         }
         catch (IOException e) {
