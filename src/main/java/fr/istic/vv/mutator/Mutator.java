@@ -255,6 +255,34 @@ public class Mutator {
 			
 			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.DIVISION);
 		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DCMPG")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(151);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.GREATER);
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DCMPL")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(152);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.LOWER);
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FCMPG")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(149);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.GREATER);
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FCMPL")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(150);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.LOWER);
+		} 
 	}
 
 	/**

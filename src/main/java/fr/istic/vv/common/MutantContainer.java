@@ -7,7 +7,7 @@ package fr.istic.vv.common;
 public interface MutantContainer {
 	
 	public enum MutantType {
-	    ADDITION, SUBTRACTION, DIVISION, MULTIPLICATION 
+	    ADDITION, SUBTRACTION, DIVISION, MULTIPLICATION, GREATER, LOWER
 	}
 	/**
 	 * 
