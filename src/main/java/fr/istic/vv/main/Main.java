@@ -33,7 +33,7 @@ public class Main {
 	private static String testClassesPath = "./TargetProject/target/classes";
 
 	public static void main(String[] args){
-		//definePaths(args);
+		definePaths(args);
 
 		logger.info("==== V&V PROJECT : Antoine & Romain ====");
 		logger.debug("Mutation testing for project :");
@@ -53,7 +53,7 @@ public class Main {
 		testRunner.setClasses(classList);
 		testRunner.setTestClasses(testClassList);
 		testRunner.setReportService(reportService);
-		
+
 		// init du mutator
 		Mutator mutator = new Mutator(classList, testRunner, classesPath);
 		try {
@@ -62,13 +62,12 @@ public class Main {
 			logger.error("Error start mutation", e);
 		}
 
-
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ System.currentTimeMillis()+".csv"));
 			writer.write(reportService.toCSV());
 			writer.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Reporting error during file writing",e);
 		}
 
 		try {
@@ -76,16 +75,13 @@ public class Main {
 			writer.write(reportService.toHTML());
 			writer.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Reporting error during file writing",e);
 		}
-
-
 	}
 
 	private static void definePaths(String[] args) {
 		if(args!=null && args.length>=1 && args[0]!=null){
 			classesPath = args[0];
-
 		}
 		if(args!=null && args.length>=2 && args[1]!=null) {
 			testClassesPath = args[1];

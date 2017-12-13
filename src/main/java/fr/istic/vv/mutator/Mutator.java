@@ -65,7 +65,7 @@ public class Mutator {
 					codeGeneration(code, mc, methods, cf, ctClass);
 					
 					// remettre les modifs
-					ctClass.writeFile("TargetProject/target/classes");
+					ctClass.writeFile(classesPath);
 					ctClass.defrost();
 				}
 			}
@@ -189,7 +189,7 @@ public class Mutator {
 		//Class classMutant = ctClass.toClass();
 		//generateTestFromMutant(classMutant, method, m);
 		try {
-			ctClass.writeFile("TargetProject/target/classes");
+			ctClass.writeFile(classesPath);
 			generateTestFromMutant(ctClass.getName(), method, m);
 			ctClass.defrost();
 			// on revient en arrière
