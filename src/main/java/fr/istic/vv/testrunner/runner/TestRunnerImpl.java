@@ -176,7 +176,7 @@ public class TestRunnerImpl implements TestRunner {
 	 * @return the test class name or null if not find
 	 */
 	private Class getTestClassForMutant(MutantContainer mutantContainer) {
-		Class originalClass = mutantContainer.getMutatedClass();
+		String originalClass = mutantContainer.getMutatedClass();
 		logger.info("Recherche du test de {}", originalClass);
 
 		String searchTestClassName = originalClass + "Test";

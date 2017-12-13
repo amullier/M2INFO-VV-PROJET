@@ -2,17 +2,17 @@ package fr.istic.vv.common;
 
 public class MutantContainerImpl implements MutantContainer{
 	
-	private Class<?> mutantClass;
+	private String mutantClass;
 	private String methodName;
 	private MutantType mutantType;
 
 	@Override
-	public Class<?> getMutatedClass() {
+	public String getMutatedClass() {
 		return mutantClass;
 	}
 
 	@Override
-	public void setMutatedClass(Class<?> mutatedClass) {
+	public void setMutatedClass(String mutatedClass) {
 		this.mutantClass = mutatedClass;		
 	}
 

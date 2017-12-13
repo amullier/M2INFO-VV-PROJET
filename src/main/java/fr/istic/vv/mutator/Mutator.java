@@ -46,31 +46,7 @@ public class Mutator {
 	 * @throws Exception
 	 */
 	public void mutate() throws Exception {
-//		String jarFile = "../M2INFO-VV-DUMMY-PROJET/target/VV-DUMMY-PROJET-1.0-SNAPSHOT.jar";
-//		JarFile jar = new JarFile(jarFile);
-//		
-//		Enumeration<JarEntry> jarEntries = jar.entries();
-
-//		while (jarEntries.hasMoreElements()) {
-//			final JarEntry jarEntry = jarEntries.nextElement();
-//
-//			if (jarEntry.getName().endsWith(".class")) {
-//				InputStream is = null;
-//				CtClass ctClass = null;
-//				try {
-//					is = jar.getInputStream(jarEntry);
-//					ClassPool cp = ClassPool.getDefault();
-//					ctClass = cp.makeClass(is);
-//					ctClass.stopPruning(true);
-//				} catch (IOException ioex1) {
-//					throw new Exception("Could not load class from JAR entry [" + jarEntry.getName() + "].");
-//				} finally {
-//					try {
-//						if (is != null)
-//							is.close();
-//					} catch (IOException ignored) {
-//					}
-//				}
+		
 		for(Class cl : classes) {
 			CtClass ctClass;
 			ClassPool cp = ClassPool.getDefault();
@@ -92,10 +68,7 @@ public class Mutator {
 					codeGeneration(code, mc, methods, cf, ctClass);
 				}
 			}
-		}
-		// jar.close();
-	//}
-	
+		}	
 
 
 	/**
@@ -212,10 +185,15 @@ public class Mutator {
 	 */
 	private void generateMutantClassTestItAndUndo(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws CannotCompileException, TestRunnerException {
 		// on génère le mutant et on lance les tests
-		Class<?> classMutant = ctClass.toClass();
-		generateTestFromMutant(classMutant, method, m);
+		Class classMutant = ctClass.toClass();
+		//generateTestFromMutant(classMutant, method, m);
+		try {
+			ctClass.writeFile("TargetProject/target/classes");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		generateTestFromMutant(classMutant.getName(), method, m);
 		ctClass.defrost();
-		
 		// on revient en arrière
 		Bytecode baseMutant = new Bytecode(cf.getConstPool());
 		baseMutant.add(baseCode);
@@ -229,7 +207,7 @@ public class Mutator {
 	 * @throws TestRunnerException
 	 * @throws CannotCompileException
 	 */
-	private void generateTestFromMutant(Class<?> classMutant, CtMethod method, MutantType m) throws TestRunnerException, CannotCompileException {
+	private void generateTestFromMutant(String classMutant, CtMethod method, MutantType m) throws TestRunnerException, CannotCompileException {
 		MutantContainer mutantContainer = createMutantContainer(classMutant, method, m); //FIXME : c'est null !!
 		this.testRunner.setMutantContainer(mutantContainer);
 		logger.debug("[Mutator]Start TestRunner on : {}", classMutant);
@@ -242,7 +220,7 @@ public class Mutator {
 	 * @return
 	 * @throws CannotCompileException
 	 */
-	private MutantContainer createMutantContainer(Class classMutant, CtMethod method, MutantType mt) throws CannotCompileException {
+	private MutantContainer createMutantContainer(String classMutant, CtMethod method, MutantType mt) throws CannotCompileException {
 		MutantContainer m = new MutantContainerImpl();
 		m.setMutatedClass(classMutant);
 		m.setMutationMethod(method.getName());
