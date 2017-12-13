@@ -2,15 +2,8 @@ package fr.istic.vv.mutator;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 
-import javax.swing.plaf.synth.SynthSeparatorUI;
-
-import javassist.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +14,10 @@ import fr.istic.vv.mutator.projet.MutateClass;
 import fr.istic.vv.mutator.projet.MutateMethod;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
 import fr.istic.vv.testrunner.runner.TestRunner;
+import javassist.CannotCompileException;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.CtMethod;
 import javassist.bytecode.BadBytecode;
 import javassist.bytecode.Bytecode;
 import javassist.bytecode.ClassFile;
@@ -66,6 +63,10 @@ public class Mutator {
 					// get all methods that should be mutate
 					CtMethod[] methods = ctClass.getDeclaredMethods();
 					codeGeneration(code, mc, methods, cf, ctClass);
+					
+					// remettre les modifs
+					ctClass.writeFile("TargetProject/target/classes");
+					ctClass.defrost();
 				}
 			}
 		}	
@@ -195,9 +196,6 @@ public class Mutator {
 			Bytecode baseMutant = new Bytecode(cf.getConstPool());
 			baseMutant.add(baseCode);
 			ci.write(baseMutant.get(), index);
-			// remettre la class dans son etat de base
-			ctClass.writeFile("TargetProject/target/classes");
-			ctClass.defrost();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
