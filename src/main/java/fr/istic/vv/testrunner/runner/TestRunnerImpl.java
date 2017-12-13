@@ -7,7 +7,7 @@ import fr.istic.vv.testrunner.exception.TestRunnerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -134,11 +134,26 @@ public class TestRunnerImpl implements TestRunner {
     private void runTest() {
         logger.info("Starting testing with MAVEN on {}", rootProjectPath);
         try {
-            Process p = Runtime.getRuntime().exec("mvn test -f " + rootProjectPath + "/pom.xml");
-            if (!p.waitFor(2, TimeUnit.MINUTES)) {
-                p.destroy();
+            BufferedReader br;
+
+            //Process p = Runtime.getRuntime().exec("mvn test -f " + rootProjectPath + "/pom.xml");
+
+            ProcessBuilder ps=new ProcessBuilder("mvn","test");
+            ps.redirectErrorStream(true);
+            ps.directory(new File(System.getProperty("user.dir")+"/"+rootProjectPath));
+
+            Process process = ps.start();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = in.readLine()) != null) {
+                logger.debug(line);
             }
-            int returnValue = p.exitValue(); //This block the execution but it is expected
+
+            process.waitFor();
+            in.close();
+
+            int returnValue = process.exitValue(); //This block the execution but it is expected
             reportService.addReport(new Report(returnValue == 0, mutantContainer));
 
         } catch (IOException e) {
