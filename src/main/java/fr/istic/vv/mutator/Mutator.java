@@ -170,7 +170,91 @@ public class Mutator {
 			ci.write(test.get(), index);
 			
 			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.DIVISION);
+		} else if (Mnemonic.OPCODE[op].toUpperCase().equals("IADD")) {
+			Bytecode mutantCode = new Bytecode(cf.getConstPool());
+			mutantCode.add(100);
+			ci.write(mutantCode.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 99, index, ci, cf, method, MutantType.ADDITION);
 		}
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("ISUB")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(96);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 103, index, ci, cf, method, MutantType.SUBTRACTION);
+			
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("IMUL")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(108);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 107, index, ci, cf, method, MutantType.MULTIPLICATION);
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("IDIV")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(104);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.DIVISION);
+		} else if (Mnemonic.OPCODE[op].toUpperCase().equals("LADD")) {
+			Bytecode mutantCode = new Bytecode(cf.getConstPool());
+			mutantCode.add(101);
+			ci.write(mutantCode.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 99, index, ci, cf, method, MutantType.ADDITION);
+		}
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("LSUB")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(97);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 103, index, ci, cf, method, MutantType.SUBTRACTION);
+			
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("LMUL")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(109);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 107, index, ci, cf, method, MutantType.MULTIPLICATION);
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("LDIV")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(105);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.DIVISION);
+		} else if (Mnemonic.OPCODE[op].toUpperCase().equals("FADD")) {
+			Bytecode mutantCode = new Bytecode(cf.getConstPool());
+			mutantCode.add(102);
+			ci.write(mutantCode.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 99, index, ci, cf, method, MutantType.ADDITION);
+		}
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FSUB")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(98);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 103, index, ci, cf, method, MutantType.SUBTRACTION);
+			
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FMUL")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(110);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 107, index, ci, cf, method, MutantType.MULTIPLICATION);
+		} 
+		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FDIV")) {
+			Bytecode test = new Bytecode(cf.getConstPool());
+			test.add(106);
+			ci.write(test.get(), index);
+			
+			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.DIVISION);
+		} 
 	}
 
 	/**
