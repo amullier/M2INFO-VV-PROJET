@@ -77,14 +77,57 @@ public class ReportServiceImpl implements ReportService {
 		return stringBuilder.toString();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
-	public String toString() {
-		return "ReportServiceImpl [reports=" + reports + "]";
+	public String toHTML(){
+		StringBuilder html = new StringBuilder();
+		html.append(getHTMLHeader());
+
+		for(Report r : reports) {
+			if(r.getMutantContainer()!=null){
+				html.append("<tr>");
+				html.append("<td>");
+				html.append(r.getMutantContainer().getMutatedClass());
+				html.append("</td>");
+				html.append("<td>");
+				html.append(r.getMutantContainer().getMutationType());
+				html.append("</td>");
+				html.append("<td>");
+				html.append(r.getMutantContainer().getMutationMethod());
+				html.append("</td>");
+				html.append(r.isMutantAlive() ? "<td class=\"ko\">" : "<td class=\"ok\">");
+				html.append(r.isMutantAlive() ? "TRUE" : "FALSE");
+				html.append("</td>");
+			}
+		}
+
+		html.append(getHTMLFooter());
+		return html.toString();
 	}
 
+	private String getHTMLHeader(){
+		String head="";
+		head+="<html>";
+		head+="<head>" +
+				"<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css\" integrity=\"sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb\" crossorigin=\"anonymous\">" +
+				"<style>" +
+				".ok{background: #599759;color: white;}" +
+				".ko{background: #aa0000;color: white;}" +
+				"</style>" +
+				"</head>";
+		head+="<body>";
+		head+="<table class=\"table\">" +
+				"<th>Mutated class</th>" +
+				"<th>Mutation type</th>" +
+				"<th>Mutated method</th>" +
+				"<th>Is mutant still alive ?</th>";
+		return head;
+	}
+
+	private String getHTMLFooter(){
+		String footer="";
+		footer+="</table>";
+		footer+="</body>";
+		footer+="</html>";
+		return footer;
+	}
 }
