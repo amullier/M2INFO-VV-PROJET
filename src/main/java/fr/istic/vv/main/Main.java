@@ -64,20 +64,30 @@ public class Main {
 
 
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report"+ System.currentTimeMillis()+".csv"));
+			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ System.currentTimeMillis()+".csv"));
 			writer.write(reportService.toCSV());
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ System.currentTimeMillis()+".html"));
+			writer.write(reportService.toHTML());
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
 	}
 
 	private static void definePaths(String[] args) {
-		if(args!=null && args[0]!=null){
+		if(args!=null && args.length>=1 && args[0]!=null){
 			classesPath = args[0];
 
 		}
-		if(args!=null && args[1]!=null) {
+		if(args!=null && args.length>=2 && args[1]!=null) {
 			testClassesPath = args[1];
 		}
 	}
