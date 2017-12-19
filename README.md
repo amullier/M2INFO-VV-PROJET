@@ -10,7 +10,7 @@ A dummy project was created for testing and development (Github available [here]
 It groups together a few classes, exceptions and unit tests.
 
 To import and compile this project you can use :
-``` shell
+``` java
     ./init_project.sh [TARGET_DIRECTORY]
 ```
 
@@ -18,7 +18,7 @@ To import and compile this project you can use :
 To launch the project you need a target project (using a Maven architecture) and define the
 path of the root project directory (relative or absolute) as the first Main parameter.
 
-```shell
+``` java
 java -classpath ./target/vv_projet-1.0-SNAPSHOT-jar-with-dependencies.jar fr.istic.vv.main.Main [PROJECT_DIRECTORY]
 ```
 
