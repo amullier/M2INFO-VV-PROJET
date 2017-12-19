@@ -27,336 +27,191 @@ import javassist.bytecode.Mnemonic;
 
 public class Mutator {
 
-	private static Logger logger = LoggerFactory.getLogger(Mutator.class);
-	private List<Class> classes;
-	private TestRunner testRunner;
-	private String classesPath;
-	
-	public Mutator(List<Class> classes, TestRunner testRunner, String classesPath) {
-		this.classes = classes;
-		this.testRunner = testRunner;
-		this.classesPath = classesPath;
-	}
-	
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	public void mutate() throws Exception {
-		
-		for(Class cl : classes) {
-			CtClass ctClass;
-			ClassPool cp = ClassPool.getDefault();
-			String classPath = classesPath + "/" + cl.getName().replaceAll("\\.","/") + ".class";
-			logger.debug("Loading class for mutation : {}",classPath);
-			ctClass = cp.makeClass(new FileInputStream(classPath));
-			ctClass.stopPruning(true);
-				if(!ctClass.isInterface()) {
-					ClassFile cf = ctClass.getClassFile();
-					logger.debug("[Mutator]ClassFile might be mutated : {}", cf);
-					
-					Bytecode code = new Bytecode(cf.getConstPool());
-					
-					// construction de la class a muter > je ne vois pas trop l'utilité pour l'instant, possible pour la description
-					MutateClass mc = new MutateClass(ctClass.getName());
-					
-					// get all methods that should be mutate
-					CtMethod[] methods = ctClass.getDeclaredMethods();
-					codeGeneration(code, mc, methods, cf, ctClass);
-					
-					// remettre les modifs
-					ctClass.writeFile(classesPath);
-					ctClass.defrost();
-				}
-			}
-		}	
+    private static Logger logger = LoggerFactory.getLogger(Mutator.class);
+    private List<Class> classes;
+    private TestRunner testRunner;
+    private String classesPath;
+
+    private static List<Mutation> mutations = MutationDefinition.getMutations();
+
+    public Mutator(List<Class> classes, TestRunner testRunner, String classesPath) {
+        this.classes = classes;
+        this.testRunner = testRunner;
+        this.classesPath = classesPath;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public void mutate() throws Exception {
+
+        for (Class cl : classes) {
+            CtClass ctClass;
+            ClassPool cp = ClassPool.getDefault();
+            String classPath = classesPath + "/" + cl.getName().replaceAll("\\.", "/") + ".class";
+            logger.debug("Loading class for mutation : {}", classPath);
+            ctClass = cp.makeClass(new FileInputStream(classPath));
+            ctClass.stopPruning(true);
+            if (!ctClass.isInterface()) {
+                ClassFile cf = ctClass.getClassFile();
+                logger.debug("ClassFile might be mutated : {}", cf.getName());
+
+                Bytecode code = new Bytecode(cf.getConstPool());
+
+                // construction de la class a muter > je ne vois pas trop l'utilité pour l'instant, possible pour la description
+                MutateClass mc = new MutateClass(ctClass.getName());
+
+                // get all methods that should be mutate
+                CtMethod[] methods = ctClass.getDeclaredMethods();
+                codeGeneration(code, mc, methods, cf, ctClass);
+
+                // remettre les modifs
+                ctClass.writeFile(classesPath);
+                ctClass.defrost();
+            }
+        }
+    }
 
 
-	/**
-	 * 
-	 * @param code
-	 * @param mc
-	 * @param methods
-	 * @param cf
-	 * @param ctClass
-	 * @throws BadBytecode
-	 * @throws TestRunnerException
-	 * @throws CannotCompileException
-	 */
-	private void codeGeneration(Bytecode code, MutateClass mc, CtMethod[] methods, ClassFile cf, CtClass ctClass) throws BadBytecode, TestRunnerException, CannotCompileException {
-		logger.debug("[Mutator]methods might be mutated : {}", methods);
-		for (CtMethod method : methods) {
-			// construction des methods a muter > je ne vois pas trop l'utilité pour l'instant, possible pour la description
-			MutateMethod mm = new MutateMethod(method.getName());
-			
-			CodeAttribute ca = method.getMethodInfo().getCodeAttribute();
-			
-			codeIterator(code, mc, mm, ca, cf, ctClass, method);
-			
-			// on remet le code a zero
-			code = new Bytecode(cf.getConstPool());
-		}
-	}
+    /**
+     * @param code
+     * @param mc
+     * @param methods
+     * @param cf
+     * @param ctClass
+     * @throws BadBytecode
+     * @throws TestRunnerException
+     * @throws CannotCompileException
+     */
+    private void codeGeneration(Bytecode code, MutateClass mc, CtMethod[] methods, ClassFile cf, CtClass ctClass) throws BadBytecode, TestRunnerException, CannotCompileException {
+        logger.debug("{} methods might be mutated in the class : {}", methods.length, cf.getName());
+        for (CtMethod method : methods) {
+            // construction des methods a muter > je ne vois pas trop l'utilité pour l'instant, possible pour la description
+            MutateMethod mm = new MutateMethod(method.getName());
+
+            CodeAttribute ca = method.getMethodInfo().getCodeAttribute();
+
+            codeIterator(code, mc, mm, ca, cf, ctClass, method);
+
+            // on remet le code a zero
+            code = new Bytecode(cf.getConstPool());
+        }
+    }
 
 
-	/**
-	 * 
-	 * @param code
-	 * @param mc
-	 * @param mm
-	 * @param ca
-	 * @param cf
-	 * @param ctClass
-	 * @param method
-	 * @throws BadBytecode
-	 * @throws TestRunnerException
-	 * @throws CannotCompileException
-	 */
-	private void codeIterator(Bytecode code, MutateClass mc, MutateMethod mm, CodeAttribute ca, ClassFile cf, CtClass ctClass, CtMethod method) throws BadBytecode, TestRunnerException, CannotCompileException {
-		if (ca != null) {
-			CodeIterator ci = ca.iterator();
-			while (ci.hasNext()) {
-				int index = ci.next();
-				int op = ci.byteAt(index);
-				
-				mutateOp(cf, ci, index, op, ctClass, method);				
+    /**
+     * @param code
+     * @param mc
+     * @param mm
+     * @param ca
+     * @param cf
+     * @param ctClass
+     * @param method
+     * @throws BadBytecode
+     * @throws TestRunnerException
+     * @throws CannotCompileException
+     */
+    private void codeIterator(Bytecode code, MutateClass mc, MutateMethod mm, CodeAttribute ca, ClassFile cf, CtClass ctClass, CtMethod method) throws BadBytecode, TestRunnerException, CannotCompileException {
+        if (ca != null) {
+            CodeIterator ci = ca.iterator();
+            while (ci.hasNext()) {
+                int index = ci.next();
+                int op = ci.byteAt(index);
 
-				mm.addBytecode(op);
-				
-			}
-			
-			// add the mutated method to the class > je ne vois pas trop l'utilité pour l'instant, possible pour la description
-			mc.addMethods(mm);
-		}
-	}
-	
-	/**
-	 * 
-	 * @param cf
-	 * @param ci
-	 * @param index
-	 * @param op
-	 * @param ctClass
-	 * @param method
-	 * @throws TestRunnerException
-	 * @throws CannotCompileException
-	 */
-	private void mutateOp(ClassFile cf, CodeIterator ci, int index, int op, CtClass ctClass, CtMethod method) throws TestRunnerException, CannotCompileException {
-		if (Mnemonic.OPCODE[op].toUpperCase().equals("DADD")) {
-			Bytecode mutantCode = new Bytecode(cf.getConstPool());
-			mutantCode.add(103);
-			ci.write(mutantCode.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 99, index, ci, cf, method, MutantType.ADDITION);
-		}
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DSUB")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(99);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 103, index, ci, cf, method, MutantType.SUBTRACTION);
-			
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DMUL")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(111);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 107, index, ci, cf, method, MutantType.MULTIPLICATION);
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DDIV")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(107);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.DIVISION);
-		} else if (Mnemonic.OPCODE[op].toUpperCase().equals("IADD")) {
-			Bytecode mutantCode = new Bytecode(cf.getConstPool());
-			mutantCode.add(100);
-			ci.write(mutantCode.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 99, index, ci, cf, method, MutantType.ADDITION);
-		}
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("ISUB")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(96);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 103, index, ci, cf, method, MutantType.SUBTRACTION);
-			
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("IMUL")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(108);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 107, index, ci, cf, method, MutantType.MULTIPLICATION);
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("IDIV")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(104);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.DIVISION);
-		} else if (Mnemonic.OPCODE[op].toUpperCase().equals("LADD")) {
-			Bytecode mutantCode = new Bytecode(cf.getConstPool());
-			mutantCode.add(101);
-			ci.write(mutantCode.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 99, index, ci, cf, method, MutantType.ADDITION);
-		}
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("LSUB")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(97);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 103, index, ci, cf, method, MutantType.SUBTRACTION);
-			
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("LMUL")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(109);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 107, index, ci, cf, method, MutantType.MULTIPLICATION);
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("LDIV")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(105);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.DIVISION);
-		} else if (Mnemonic.OPCODE[op].toUpperCase().equals("FADD")) {
-			Bytecode mutantCode = new Bytecode(cf.getConstPool());
-			mutantCode.add(102);
-			ci.write(mutantCode.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 99, index, ci, cf, method, MutantType.ADDITION);
-		}
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FSUB")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(98);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 103, index, ci, cf, method, MutantType.SUBTRACTION);
-			
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FMUL")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(110);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 107, index, ci, cf, method, MutantType.MULTIPLICATION);
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FDIV")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(106);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.DIVISION);
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DCMPG")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(151);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.GREATER);
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("DCMPL")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(152);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.LOWER);
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FCMPG")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(149);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.GREATER);
-		} 
-		else if (Mnemonic.OPCODE[op].toUpperCase().equals("FCMPL")) {
-			Bytecode test = new Bytecode(cf.getConstPool());
-			test.add(150);
-			ci.write(test.get(), index);
-			
-			generateMutantClassTestItAndUndo(ctClass, 111, index, ci, cf, method, MutantType.LOWER);
-		} 
-	}
+                mutateOp(cf, ci, index, op, ctClass, method);
 
-	/**
-	 * 
-	 * @param ctClass
-	 * @param baseCode
-	 * @param index
-	 * @param ci
-	 * @param cf
-	 * @param method
-	 * @throws CannotCompileException
-	 * @throws TestRunnerException
-	 */
-	private void generateMutantClassTestItAndUndo(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws CannotCompileException, TestRunnerException {
-		// on génère le mutant et on lance les tests
-		//Class classMutant = ctClass.toClass();
-		//generateTestFromMutant(classMutant, method, m);
-		try {
-			ctClass.writeFile(classesPath);
-			generateTestFromMutant(ctClass.getName(), method, m);
-			ctClass.defrost();
-			// on revient en arrière
-			Bytecode baseMutant = new Bytecode(cf.getConstPool());
-			baseMutant.add(baseCode);
-			ci.write(baseMutant.get(), index);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * ici les parametres servent a construire des informations utils lors des tests, comme quelle class a été muter ou quelle methode
-	 * @param classMutant
-	 * @param method
-	 * @throws TestRunnerException
-	 * @throws CannotCompileException
-	 */
-	private void generateTestFromMutant(String classMutant, CtMethod method, MutantType m) throws TestRunnerException, CannotCompileException {
-		MutantContainer mutantContainer = createMutantContainer(classMutant, method, m); //FIXME : c'est null !!
-		this.testRunner.setMutantContainer(mutantContainer);
-		logger.debug("[Mutator]Start TestRunner on : {}", classMutant);
-		this.testRunner.execute();
-		logger.debug("[Mutator]End TestRunner on : {}", classMutant);
-	}
-	/**
-	 * 
-	 * @param classMutant
-	 * @return
-	 * @throws CannotCompileException
-	 */
-	private MutantContainer createMutantContainer(String classMutant, CtMethod method, MutantType mt) throws CannotCompileException {
-		MutantContainer m = new MutantContainerImpl();
-		m.setMutatedClass(classMutant);
-		m.setMutationMethod(method.getName());
-		m.setMutationType(mt);
-		return m;
-	}
-	
+                mm.addBytecode(op);
+
+            }
+
+            // add the mutated method to the class > je ne vois pas trop l'utilité pour l'instant, possible pour la description
+            mc.addMethods(mm);
+        }
+    }
+
+    /**
+     * @param cf
+     * @param ci
+     * @param index
+     * @param op
+     * @param ctClass
+     * @param method
+     * @throws TestRunnerException
+     * @throws CannotCompileException
+     */
+    private void mutateOp(ClassFile cf, CodeIterator ci, int index, int op, CtClass ctClass, CtMethod method) throws TestRunnerException, CannotCompileException {
+        for (Mutation mutation : mutations) {
+            if (Mnemonic.OPCODE[op].equalsIgnoreCase(mutation.getTargetOperation())) {
+                logger.debug("{}", mutation);
+                Bytecode bytecode = new Bytecode(cf.getConstPool());
+                bytecode.add(mutation.getMutationOperationCode());
+                ci.write(bytecode.get(), index);
+
+                //Writing file into the physical file
+                try {
+                    logger.info("Writing class file : {}", ctClass.getClassFile().getName());
+                    ctClass.writeFile(classesPath);
+                    ctClass.defrost();
+                } catch (IOException e) {
+                    logger.warn("An error occurred during mutated class writing", e);
+                }
+
+                generateMutantClassTestItAndUndo(ctClass, mutation.getTargetOperationCode(), index, ci, cf, method, mutation.getMutationType());
+            }
+        }
+    }
+
+    /**
+     * @param ctClass
+     * @param baseCode
+     * @param index
+     * @param ci
+     * @param cf
+     * @param method
+     * @throws CannotCompileException
+     * @throws TestRunnerException
+     */
+    public void generateMutantClassTestItAndUndo(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws CannotCompileException, TestRunnerException {
+        // on génère le mutant et on lance les tests
+        //Class classMutant = ctClass.toClass();
+        //generateTestForMutant(classMutant, method, m);
+        //ctClass.writeFile(classesPath);
+        generateTestForMutant(ctClass.getName(), method, m);
+        ctClass.defrost();
+        // on revient en arrière
+        Bytecode baseMutant = new Bytecode(cf.getConstPool());
+        baseMutant.add(baseCode);
+        ci.write(baseMutant.get(), index);
+    }
+
+    /**
+     * Creates a mutant container (to transfer information to TestRunner) and launch test with TestRunner
+     *
+     * @param classMutant
+     * @param method
+     * @throws TestRunnerException
+     * @throws CannotCompileException
+     */
+    private void generateTestForMutant(String classMutant, CtMethod method, MutantType m) throws TestRunnerException {
+        MutantContainer mutantContainer = createMutantContainer(classMutant, method, m);
+        this.testRunner.setMutantContainer(mutantContainer);
+        logger.debug("Start TestRunner execute after mutation on {}", classMutant);
+        this.testRunner.execute();
+        logger.debug("TestRunner execution is finished", classMutant);
+    }
+
+    /**
+     * @param classMutant
+     * @return
+     * @throws CannotCompileException
+     */
+    private MutantContainer createMutantContainer(String classMutant, CtMethod method, MutantType mt) {
+        logger.trace("Creating a mutant container");
+        MutantContainer m = new MutantContainerImpl();
+        m.setMutatedClass(classMutant);
+        m.setMutationMethod(method.getName());
+        m.setMutationType(mt);
+        return m;
+    }
+
 }
-//
-
-/*
- * TODO:
- * Pour le moment, on a une mutation total, bien sur il faut regler ce problem:
- * 1er solution: utilisé mutateClass et mutateMethod comme memento pour revenir en arriere a chaque fois qu'un mutant est généré
- * 
- * 2eme solution: on stock l'index où la mutation a été appliqué, on génère le mutant, on /!\dégèle/!\ la class, puis on remet 
- * à l'index le code d'avant, puis on continue la génération du mutant
- * 
- * A faire : commencer par la seconde solution, plus simple a priori et voir si ça répond à ce qui est attendu
- * 
- * C'est fait
- * /!\/!\
- */
-
-
-//
