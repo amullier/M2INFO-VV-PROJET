@@ -30,9 +30,9 @@ public class MutationDefinition {
             mutations.add(new Mutation(prefix + "div", indexOf(prefix + "div"), prefix + "mul",indexOf(prefix + "mul"), MutantContainer.MutantType.DIVISION));
         }
 
-        mutations.add(new Mutation("ifeq", indexOf("ifeq"), "ifneq",indexOf("ifneq"), MutantContainer.MutantType.CONDITION_EQ));
+        mutations.add(new Mutation("ifeq", indexOf("ifeq"), "ifne",indexOf("ifne"), MutantContainer.MutantType.CONDITION_EQ));
 
-        mutations.add(new Mutation("ifneq", indexOf("ifneq"), "ifeq",indexOf("ifeq"), MutantContainer.MutantType.CONDITION_NEQ));
+        mutations.add(new Mutation("ifne", indexOf("ifne"), "ifeq",indexOf("ifeq"), MutantContainer.MutantType.CONDITION_NEQ));
 
 
         return mutations;
