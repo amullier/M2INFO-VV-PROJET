@@ -138,7 +138,7 @@ public class TestRunnerImpl implements TestRunner {
 
             //Process p = Runtime.getRuntime().exec("mvn test -f " + rootProjectPath + "/pom.xml");
 
-            ProcessBuilder ps=new ProcessBuilder("mvn","test");
+            ProcessBuilder ps=new ProcessBuilder("mvn","surefire:test");
             ps.redirectErrorStream(true);
             ps.directory(new File(System.getProperty("user.dir")+"/"+rootProjectPath));
 

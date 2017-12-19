@@ -21,16 +21,19 @@ public class MutationDefinition {
             mutations.add(new Mutation(prefix + "add", indexOf(prefix + "add"), prefix + "sub", indexOf(prefix + "sub"), MutantContainer.MutantType.ADDITION));
 
             //Subtraction -> Addition
-            //mutations.add(new Mutation(prefix + "sub", indexOf(prefix + "sub"), prefix + "add", indexOf(prefix + "add"), MutantContainer.MutantType.SUBTRACTION));
+            mutations.add(new Mutation(prefix + "sub", indexOf(prefix + "sub"), prefix + "add", indexOf(prefix + "add"), MutantContainer.MutantType.SUBTRACTION));
 
             //Multiplication -> Division
-            //mutations.add(new Mutation(prefix + "mul", indexOf(prefix + "mul"), prefix + "div",indexOf(prefix + "div"), MutantContainer.MutantType.MULTIPLICATION));
+            mutations.add(new Mutation(prefix + "mul", indexOf(prefix + "mul"), prefix + "div",indexOf(prefix + "div"), MutantContainer.MutantType.MULTIPLICATION));
 
             //Division -> Multiplication
-            //mutations.add(new Mutation(prefix + "div", indexOf(prefix + "div"), prefix + "mul",indexOf(prefix + "mul"), MutantContainer.MutantType.DIVISION));
+            mutations.add(new Mutation(prefix + "div", indexOf(prefix + "div"), prefix + "mul",indexOf(prefix + "mul"), MutantContainer.MutantType.DIVISION));
         }
 
-        //mutations.add(new Mutation("ifeq", indexOf("ifeq"), "ifneq",indexOf("ifneq"), MutantContainer.MutantType.CONDITION));
+        mutations.add(new Mutation("ifeq", indexOf("ifeq"), "ifneq",indexOf("ifneq"), MutantContainer.MutantType.CONDITION_EQ));
+
+        mutations.add(new Mutation("ifneq", indexOf("ifneq"), "ifeq",indexOf("ifeq"), MutantContainer.MutantType.CONDITION_NEQ));
+
 
         return mutations;
     }

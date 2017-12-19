@@ -7,7 +7,26 @@ package fr.istic.vv.common;
 public interface MutantContainer {
 	
 	public enum MutantType {
-	    ADDITION, SUBTRACTION, DIVISION, MULTIPLICATION, CONDITION
+	    ADDITION("+ is replaced by -"),
+		SUBTRACTION("- is replaced by +"),
+		DIVISION("/ is replaced by *"),
+		MULTIPLICATION("* is replaced by /"),
+		CONDITION_EQ("ifeq is replaced by ifneq"),
+		CONDITION_NEQ("ifNeq is replaced by ifeq");
+
+		private final String text;
+
+		/**
+		 * @param text
+		 */
+		private MutantType(final String text) {
+			this.text = text;
+		}
+
+		@Override
+		public String toString() {
+			return text;
+		}
 	}
 	/**
 	 * 
