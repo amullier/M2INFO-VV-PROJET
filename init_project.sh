@@ -11,10 +11,19 @@ url="https://github.com/amullier/M2INFO-VV-DUMMY-PROJET"
 
 function print_usage()
 {
-	echo "$BLUE $0 $NC -d [DEST_DIR]"
-	echo "${BLUE}DEST_DIR :$NC Dossier de destination du projet"
+	echo -e "$BLUE $0 $NC [DEST_DIR]"
+	echo -e "${BLUE}DEST_DIR :$NC Dossier de destination du projet"
+	exit 1 
 }
 
+if [ $# -ne 1 ] 
+then
+	print_usage
+fi
+
+DEST_DIR=$1
+
+cd $DEST_DIR
 rm -rf M2INFO-VV-DUMMY-PROJET > /dev/null
 
 echo "Récupération des sources depuis Github"
@@ -25,3 +34,5 @@ echo "Compilation des sources à l'aide de MAVEN"
 mvn clean install > /dev/null
 
 echo "Importation du projet de test terminée."
+
+echo -e "$BLUE -> Chemin du projet :$NC ${DEST_DIR}/M2INFO-VV-DUMMY-PROJET"
