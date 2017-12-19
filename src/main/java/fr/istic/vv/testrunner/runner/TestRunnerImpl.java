@@ -140,7 +140,12 @@ public class TestRunnerImpl implements TestRunner {
 
             ProcessBuilder ps=new ProcessBuilder("mvn","surefire:test");
             ps.redirectErrorStream(true);
-            ps.directory(new File(System.getProperty("user.dir")+"/"+rootProjectPath));
+            if(rootProjectPath.substring(0,1).equalsIgnoreCase(".")){
+                ps.directory(new File(System.getProperty("user.dir")+"/"+rootProjectPath));
+            }
+            else{
+                ps.directory(new File(rootProjectPath));
+            }
 
             Process process = ps.start();
 
