@@ -28,16 +28,12 @@ public class ClassParser {
      * @return classes list
      */
     public List<Class> getClassesFromDirectory(String directoryPath){
-        List<Class> classList = new ArrayList<>();
-
         logger.info("Class parsing into {}",directoryPath);
         File classDirectory = new File(directoryPath);
 
         List<String> classesName = getClassesNameFromDirectory(classDirectory);
 
-        classList = loadClassFromDirectory(classDirectory,classesName);
-
-        return classList;
+        return loadClassFromDirectory(classDirectory,classesName);
     }
 
     /**
@@ -54,8 +50,6 @@ public class ClassParser {
             URL[] urls = new URL[]{url};
 
             loadingDirectoryClasses(directoryClass, classesName, loadedClasses, urls);
-        } catch (ClassNotFoundException e) {
-            logger.error("Class can not be load",e);
         } catch (MalformedURLException e) {
             logger.error("Directory can not be transform into URL object",e);
         }
@@ -63,26 +57,27 @@ public class ClassParser {
         return loadedClasses;
     }
 
-    private void loadingDirectoryClasses(File directoryClass, List<String> classesName, List<Class> loadedClasses, URL[] urls) throws ClassNotFoundException {
+    private void loadingDirectoryClasses(File directoryClass, List<String> classesName, List<Class> loadedClasses, URL[] urls){
         logger.trace("Loading folder into classLoader");
         try(URLClassLoader classLoader = new URLClassLoader(urls)) {
             logger.trace("Loading classes located in {}", directoryClass.getAbsolutePath());
             for (String className : classesName) {
-                try{
-                    Class theClass = classLoader.loadClass(className);
-                    logger.debug("Loading class : {}", className);
-                    loadedClasses.add(theClass);
-                }
-                catch(ClassNotFoundException e){
-                    logger.debug("The file {} can not be loaded",className,e);
-                }
-                catch(NoClassDefFoundError e){
-                    logger.debug("The file {} can not be loaded",className,e);
-                }
+                loadClass(loadedClasses, classLoader, className);
             }
         }
         catch (IOException e) {
             logger.warn("Errors occured during classLoader closing");
+        }
+    }
+
+    private void loadClass(List<Class> loadedClasses, URLClassLoader classLoader, String className) {
+        try{
+            Class theClass = classLoader.loadClass(className);
+            logger.debug("Loading class : {}", className);
+            loadedClasses.add(theClass);
+        }
+        catch(ClassNotFoundException | NoClassDefFoundError e){
+            logger.debug("The file {} can not be loaded",className,e);
         }
     }
 

@@ -4,25 +4,12 @@ import fr.istic.vv.common.ClassParser;
 import fr.istic.vv.mutator.Mutator;
 import fr.istic.vv.report.ReportService;
 import fr.istic.vv.report.ReportServiceImpl;
-import fr.istic.vv.testrunner.exception.TestRunnerException;
 import fr.istic.vv.testrunner.runner.TestRunner;
 import fr.istic.vv.testrunner.runner.TestRunnerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
 

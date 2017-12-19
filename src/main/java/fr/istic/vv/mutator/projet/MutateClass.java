@@ -9,7 +9,7 @@ public class MutateClass {
 	
 	public MutateClass(String name) {
 		this.setName(name);
-		this.methods = new ArrayList<MutateMethod>();
+		this.methods = new ArrayList<>();
 	}
 	
 	/**

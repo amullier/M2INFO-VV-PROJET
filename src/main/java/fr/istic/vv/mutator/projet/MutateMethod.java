@@ -10,7 +10,7 @@ public class MutateMethod {
 	
 	public MutateMethod(String name) {
 		this.name = name;
-		this.content = new ArrayList<Integer>();
+		this.content = new ArrayList<>();
 	}
 	
 	public String getName() {

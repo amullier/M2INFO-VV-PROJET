@@ -24,6 +24,9 @@ public class ReportServiceImpl implements ReportService {
 
 	private long stopTesting;
 
+	private static final String HTML_STARTLINE = "<td>";
+	private static final String HTML_ENDLINE = "</td>";
+
 	/**
 	 * Constructor creates a empty reports list
 	 */
@@ -33,6 +36,13 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void addReport(Report report) {
+		if(report.isMutantAlive()){
+			logger.debug("Mutant is still alive.");
+		}
+		else{
+			logger.debug("Mutant killed.");
+
+		}
 		logger.debug("======================================");
 		logger.debug("Mutation information :");
 		logger.debug("Mutated class {}", report.getMutantContainer().getMutatedClass());
@@ -48,12 +58,12 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void generateCSV() {
-		try {
-			DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
-			Date date = new Date(startTesting);
-			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ df.format(date) +".csv"));
+		DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
+		Date date = new Date(startTesting);
+
+
+		try(BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ df.format(date) +".csv"))) {
 			writer.write(toCSV());
-			writer.close();
 			logger.info("CSV file generated.");
 		} catch (IOException e) {
 			logger.error("Reporting error during file writing",e);
@@ -99,11 +109,10 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void generateHTML() {
-		try {
-			DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
-			Date date = new Date(startTesting);
+		DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
+		Date date = new Date(startTesting);
 
-			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ df.format(date) +".html"));
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ df.format(date) +".html"))){
 			writer.write(toHTML());
 			writer.close();
 			logger.info("HTML file generated.");
@@ -120,21 +129,21 @@ public class ReportServiceImpl implements ReportService {
 		for(Report r : reports) {
 			if(r.getMutantContainer()!=null){
 				html.append("<tr>");
-				html.append("<td>");
+				html.append(HTML_STARTLINE);
 				html.append(index);
-				html.append("</td>");
-				html.append("<td>");
+				html.append(HTML_ENDLINE);
+				html.append(HTML_STARTLINE);
 				html.append(r.getMutantContainer().getMutatedClass());
-				html.append("</td>");
-				html.append("<td>");
+				html.append(HTML_ENDLINE);
+				html.append(HTML_STARTLINE);
 				html.append(r.getMutantContainer().getMutationType());
-				html.append("</td>");
-				html.append("<td>");
+				html.append(HTML_ENDLINE);
+				html.append(HTML_STARTLINE);
 				html.append(r.getMutantContainer().getMutationMethod());
-				html.append("</td>");
+				html.append(HTML_ENDLINE);
 				html.append(r.isMutantAlive() ? "<td class=\"ko\">" : "<td class=\"ok\">");
 				html.append(r.isMutantAlive() ? "TRUE" : "FALSE");
-				html.append("</td>");
+				html.append(HTML_ENDLINE);
 				index++;
 			}
 		}
@@ -169,11 +178,11 @@ public class ReportServiceImpl implements ReportService {
 		head+="<table class='table'>" +
 				"	<tr>" +
 				"		<td><b>Project :</b></td>" +
-				"		<td>"+projectName+"</td>" +
+				"		<td>"+projectName+HTML_ENDLINE +
 				"	</tr>" +
 				"	<tr>" +
 				"   	<td><b>Duration :</b></td>" +
-				"   	<td>"+getInterval()+"</td>" +
+				"   	<td>"+getInterval()+HTML_ENDLINE +
 				"	</tr>" +
 				"</table>";
 		head+="<table class='table'>" +

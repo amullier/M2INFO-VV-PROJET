@@ -12,6 +12,12 @@ import java.util.List;
 public class MutationDefinition {
     private static Logger logger = LoggerFactory.getLogger(MutationDefinition.class);
 
+    /**
+     * This class cannot be instantiated
+     */
+    private MutationDefinition() {
+    }
+
     public static List<Mutation> getMutations(){
         List<Mutation> mutations = new ArrayList<>();
 
@@ -41,7 +47,7 @@ public class MutationDefinition {
     private static int indexOf(String operation){
         int index = Arrays.asList(Mnemonic.OPCODE).indexOf(operation);
         if(index==-1){
-            logger.error("The "+operation+" was not found in Mnemonic.OPCODE table");
+            logger.error("The {} was not found in Mnemonic.OPCODE table",operation);
         }
         return index;
     }
