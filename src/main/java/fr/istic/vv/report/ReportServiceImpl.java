@@ -54,6 +54,7 @@ public class ReportServiceImpl implements ReportService {
 			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ df.format(date) +".csv"));
 			writer.write(toCSV());
 			writer.close();
+			logger.info("CSV file generated.");
 		} catch (IOException e) {
 			logger.error("Reporting error during file writing",e);
 		}
@@ -105,6 +106,7 @@ public class ReportServiceImpl implements ReportService {
 			BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ df.format(date) +".html"));
 			writer.write(toHTML());
 			writer.close();
+			logger.info("HTML file generated.");
 		} catch (IOException e) {
 			logger.error("Reporting error during file writing",e);
 		}

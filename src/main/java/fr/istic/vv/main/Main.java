@@ -36,10 +36,12 @@ public class Main {
 	public static void main(String[] args){
 		definePaths(args);
 
-		logger.info("==== V&V PROJECT : Antoine & Romain ====");
-		logger.debug("Mutation testing for project :");
-		logger.debug("Classes root directory : {}", classesPath);
-		logger.debug("Test classes root directory : {}", testClassesPath);
+		logger.info("==================== V&V PROJECT : Antoine & Romain ====================");
+		logger.info("Mutation testing for project :");
+		logger.info("  | Classes root directory : {}", classesPath);
+		logger.info("  | Test classes root directory : {}", testClassesPath);
+		logger.info("========================================================================");
+
 
 		// Project parsing to find classes list
 		ClassParser classParser = new ClassParser();
@@ -67,7 +69,8 @@ public class Main {
 		}
 		reportService.stopMutationTesting();
 
-
+		logger.info("");
+		logger.info("Reporting Generation");
 		reportService.generateCSV();
 		reportService.generateHTML();
 	}

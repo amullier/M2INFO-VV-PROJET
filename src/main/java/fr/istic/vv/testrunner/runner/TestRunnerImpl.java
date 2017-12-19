@@ -132,12 +132,8 @@ public class TestRunnerImpl implements TestRunner {
      * Run a test class with the mutated class
      */
     private void runTest() {
-        logger.info("Starting testing with MAVEN on {}", rootProjectPath);
+        logger.debug("Starting testing with MAVEN on {}", rootProjectPath);
         try {
-            BufferedReader br;
-
-            //Process p = Runtime.getRuntime().exec("mvn test -f " + rootProjectPath + "/pom.xml");
-
             ProcessBuilder ps=new ProcessBuilder("mvn","surefire:test");
             ps.redirectErrorStream(true);
             if(rootProjectPath.substring(0,1).equalsIgnoreCase(".")){
@@ -152,7 +148,7 @@ public class TestRunnerImpl implements TestRunner {
             BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
-                logger.debug(line);
+                logger.trace(line);
             }
 
             process.waitFor();

@@ -31,6 +31,7 @@ public class Mutator {
     private List<Class> classes;
     private TestRunner testRunner;
     private String classesPath;
+    private int indexMutation;
 
     private static List<Mutation> mutations = MutationDefinition.getMutations();
 
@@ -49,7 +50,7 @@ public class Mutator {
             CtClass ctClass;
             ClassPool cp = ClassPool.getDefault();
             String classPath = classesPath + "/" + cl.getName().replaceAll("\\.", "/") + ".class";
-            logger.debug("Loading class for mutation : {}", classPath);
+            logger.info("Loading class for mutation : {}", classPath);
             ctClass = cp.makeClass(new FileInputStream(classPath));
             ctClass.stopPruning(true);
             if (!ctClass.isInterface()) {
@@ -142,14 +143,15 @@ public class Mutator {
     private void mutateOp(ClassFile cf, CodeIterator ci, int index, int op, CtClass ctClass, CtMethod method) throws TestRunnerException, CannotCompileException {
         for (Mutation mutation : mutations) {
             if (Mnemonic.OPCODE[op].equalsIgnoreCase(mutation.getTargetOperation())) {
-                logger.debug("{}", mutation);
+                logger.info("#{} {}", indexMutation, mutation);
+                indexMutation++;
                 Bytecode bytecode = new Bytecode(cf.getConstPool());
                 bytecode.add(mutation.getMutationOperationCode());
                 ci.write(bytecode.get(), index);
 
                 //Writing file into the physical file
                 try {
-                    logger.info("Writing class file : {}", ctClass.getClassFile().getName());
+                    logger.debug("Writing class file : {}", ctClass.getClassFile().getName());
                     ctClass.writeFile(classesPath);
                     ctClass.defrost();
                 } catch (IOException e) {
@@ -172,10 +174,6 @@ public class Mutator {
      * @throws TestRunnerException
      */
     public void generateMutantClassTestItAndUndo(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws CannotCompileException, TestRunnerException {
-        // on génère le mutant et on lance les tests
-        //Class classMutant = ctClass.toClass();
-        //generateTestForMutant(classMutant, method, m);
-        //ctClass.writeFile(classesPath);
         generateTestForMutant(ctClass.getName(), method, m);
         ctClass.defrost();
         // on revient en arrière
