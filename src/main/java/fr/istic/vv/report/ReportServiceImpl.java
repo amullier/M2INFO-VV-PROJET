@@ -37,10 +37,10 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public void addReport(Report report) {
 		if(report.isMutantAlive()){
-			logger.debug("Mutant is still alive.");
+			logger.info("Mutant is still alive.");
 		}
 		else{
-			logger.debug("Mutant killed.");
+			logger.info("Mutant killed.");
 
 		}
 		logger.debug("======================================");
