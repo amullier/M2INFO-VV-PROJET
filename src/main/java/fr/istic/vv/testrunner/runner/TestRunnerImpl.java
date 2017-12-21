@@ -127,6 +127,9 @@ public class TestRunnerImpl implements TestRunner {
         if (mutantContainer == null) {
             throw new TestRunnerException("Mutated class is not in TestRunner");
         }
+        if(rootProjectPath==null||rootProjectPath.equalsIgnoreCase("")){
+            throw new TestRunnerException("Project path is not in TestRunner");
+        }
 
         logger.debug("Verification OK for running tests on project.");
     }

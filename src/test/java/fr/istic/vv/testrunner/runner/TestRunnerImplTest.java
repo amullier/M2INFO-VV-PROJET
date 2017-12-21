@@ -1,6 +1,8 @@
 package fr.istic.vv.testrunner.runner;
 
 import fr.istic.vv.common.MutantContainer;
+import fr.istic.vv.common.MutantContainerImpl;
+import fr.istic.vv.report.ReportServiceImpl;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
 import org.junit.After;
 import org.junit.Before;
@@ -19,7 +21,6 @@ public class TestRunnerImplTest {
 
     @Before
     public void setUp(){
-        MockitoAnnotations.initMocks(this);
         testRunner = new TestRunnerImpl();
     }
 
@@ -50,41 +51,69 @@ public class TestRunnerImplTest {
         List<Class> classList = new ArrayList<>();
         classList.add(class1);
         classList.add(class2);
-        //testRunner.setClasses(classList);
+        testRunner.setClasses(classList);
 
         List<Class> testClassList = new ArrayList<>();
         testClassList.add(class3);
-        //testRunner.setTestClasses(testClassList);
+        testRunner.setTestClasses(testClassList);
 
         assertNotNull(testRunner.getClasses());
         assertNotNull(testRunner.getTestClasses());
         testRunner.execute();
     }
 
-    //@Test
-    public void validExecution() throws TestRunnerException{
+    @Test(expected = TestRunnerException.class)
+    public void executionWithoutPath() throws TestRunnerException{
         Class class1 = String.class;
-        Class class2 = String.class;
-        Class class3 = String.class;
+        Class class2 = List.class;
+        Class class3 = Class.class;
 
         List<Class> classList = new ArrayList<>();
         classList.add(class1);
         classList.add(class2);
-        //testRunner.setClasses(classList);
+        testRunner.setClasses(classList);
 
         List<Class> testClassList = new ArrayList<>();
         testClassList.add(class3);
-        //testRunner.setTestClasses(testClassList);
+        testRunner.setTestClasses(testClassList);
+
+        MutantContainer container = new MutantContainerImpl();
+        container.setMutatedClass("class");
+        container.setMutationMethod("method");
+        container.setMutationType(MutantContainer.MutantType.ADDITION);
+        testRunner.setMutantContainer(container);
 
         assertNotNull(testRunner.getClasses());
         assertNotNull(testRunner.getTestClasses());
+        testRunner.execute();
+    }
 
-        MutantContainer mutantContainer = Mockito.mock(MutantContainer.class);
-        //Mockito.when(mutantContainer.getMutatedClass()).thenReturn(String.class);
-        //Mockito.when(mutantContainer.getMutationDescription()).thenReturn("Une description");
-        testRunner.setMutantContainer(mutantContainer);
-        assertNotNull(testRunner.getMutantContainer());
+    @Test
+    public void validExecution() throws TestRunnerException{
+        Class class1 = String.class;
+        Class class2 = List.class;
+        Class class3 = Class.class;
 
+        List<Class> classList = new ArrayList<>();
+        classList.add(class1);
+        classList.add(class2);
+        testRunner.setClasses(classList);
+
+        List<Class> testClassList = new ArrayList<>();
+        testClassList.add(class3);
+        testRunner.setTestClasses(testClassList);
+
+        MutantContainer container = new MutantContainerImpl();
+        container.setMutatedClass("class");
+        container.setMutationMethod("method");
+        container.setMutationType(MutantContainer.MutantType.ADDITION);
+        testRunner.setMutantContainer(container);
+
+        testRunner.setRootProjectPath("/tmp");
+        testRunner.setReportService(new ReportServiceImpl());
+
+        assertNotNull(testRunner.getClasses());
+        assertNotNull(testRunner.getTestClasses());
         testRunner.execute();
     }
 }
