@@ -28,7 +28,7 @@ public class Mutator {
      */
     private static final List<Mutation> mutations = MutationDefinition.getMutations();
     private static final Logger logger = LoggerFactory.getLogger(Mutator.class);
-    private static final String PATH_DELIMITER = "/";
+    public static final String PATH_DELIMITER = "/";
 
     private List<Class> classes;
     private TestRunner testRunner;

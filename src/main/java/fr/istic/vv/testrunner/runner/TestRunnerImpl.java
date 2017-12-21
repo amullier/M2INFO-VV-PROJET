@@ -1,6 +1,7 @@
 package fr.istic.vv.testrunner.runner;
 
 import fr.istic.vv.common.MutantContainer;
+import fr.istic.vv.mutator.Mutator;
 import fr.istic.vv.report.Report;
 import fr.istic.vv.report.ReportService;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * TestRunner is in charge to run tests on the target project
  * defined in the Main
- *
+ * <p>
  * The execute() call is sent by the Mutator
  */
 public class TestRunnerImpl implements TestRunner {
@@ -133,15 +134,14 @@ public class TestRunnerImpl implements TestRunner {
     /**
      * Run a test class with the mutated class
      */
-    private void runTest() {
+    private void runTest() throws TestRunnerException {
         logger.debug("Starting testing with MAVEN on {}", rootProjectPath);
         try {
-            ProcessBuilder ps=new ProcessBuilder("mvn","surefire:test");
+            ProcessBuilder ps = new ProcessBuilder("mvn", "surefire:test");
             ps.redirectErrorStream(true);
-            if(rootProjectPath.substring(0,1).equalsIgnoreCase(".")){
-                ps.directory(new File(System.getProperty("user.dir")+"/"+rootProjectPath));
-            }
-            else{
+            if (rootProjectPath.substring(0, 1).equalsIgnoreCase(".")) {
+                ps.directory(new File(System.getProperty("user.dir") + Mutator.PATH_DELIMITER + rootProjectPath));
+            } else {
                 ps.directory(new File(rootProjectPath));
             }
 
@@ -159,10 +159,9 @@ public class TestRunnerImpl implements TestRunner {
             int returnValue = process.exitValue(); //This block the execution but it is expected
             reportService.addReport(new Report(returnValue == 0, mutantContainer));
 
-        } catch (IOException e) {
-            logger.warn("An error occured during testing", e);
-        } catch (InterruptedException e) {
-            logger.warn("An error occured during testing", e);
+        } catch (IOException | InterruptedException e) {
+            logger.warn("An error occurred during testing", e);
+            throw new TestRunnerException("An error occurred during testing");
         }
     }
 
