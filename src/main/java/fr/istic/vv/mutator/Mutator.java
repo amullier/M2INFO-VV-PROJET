@@ -1,29 +1,22 @@
 package fr.istic.vv.mutator;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.istic.vv.common.MutantContainer;
 import fr.istic.vv.common.MutantContainer.MutantType;
 import fr.istic.vv.common.MutantContainerImpl;
-import fr.istic.vv.mutator.projet.MutateClass;
-import fr.istic.vv.mutator.projet.MutateMethod;
+import fr.istic.vv.mutator.exception.MutatorException;
 import fr.istic.vv.testrunner.exception.TestRunnerException;
 import fr.istic.vv.testrunner.runner.TestRunner;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
-import javassist.bytecode.BadBytecode;
-import javassist.bytecode.Bytecode;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.CodeAttribute;
-import javassist.bytecode.CodeIterator;
-import javassist.bytecode.Mnemonic;
+import javassist.bytecode.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Mutator class take in charge bytecode modification and test launch with the TestRunner
@@ -33,7 +26,7 @@ public class Mutator {
     /**
      * List of all possible mutations for mutation testing
      */
-    public static final List<Mutation> mutations = MutationDefinition.getMutations();
+    private static final List<Mutation> mutations = MutationDefinition.getMutations();
     private static final Logger logger = LoggerFactory.getLogger(Mutator.class);
     private static final String PATH_DELIMITER = "/";
 
@@ -52,9 +45,24 @@ public class Mutator {
     /**
      * Start the mutation testing on the project defined by Mutator attributes
      *
-     * @throws Exception
+     * @throws MutatorException
      */
-    public void mutate() throws Exception {
+    public void mutate() throws MutatorException, TestRunnerException {
+        if(classes==null){
+            logger.error("Classes are not set correctly in Mutator");
+            throw new MutatorException("Classes are not set correctly in Mutator");
+        }
+
+        if(testRunner==null){
+            logger.error("Test runner is not defined in Mutator");
+            throw new MutatorException("Test runner is not defined in Mutator");
+        }
+
+        if(classesPath==null){
+            logger.error("Classes path is not defined in Mutator");
+            throw new MutatorException("Classes path is not defined in Mutator");
+        }
+
         //Classes crawl
         for (Class cl : classes) {
             //Get the class path file
@@ -63,33 +71,42 @@ public class Mutator {
 
             CtClass ctClass;
             ClassPool cp = ClassPool.getDefault();
-            ctClass = cp.makeClass(new FileInputStream(classPath));
-            ctClass.stopPruning(true);
+            try {
+                ctClass = cp.makeClass(new FileInputStream(classPath));
+                ctClass.stopPruning(true);
 
-            //Running algorithm only for classes
-            if (!ctClass.isInterface()) {
-                ClassFile cf = ctClass.getClassFile();
-                double progression  = ((double)indexMutationClass/(double)classes.size())*100;
-                logger.info("[{}.{}%] Mutation testing on {}",(int)progression,(int) (progression - (int)(progression))*100, cf.getName());
+                if (!ctClass.isInterface()) {
+                    ClassFile cf = ctClass.getClassFile();
+                    double progression = ((double) indexMutationClass / (double) classes.size()) * 100;
+                    logger.info("[{}.{}%] Mutation testing on {}", (int) progression, (int) (progression - (int) (progression)) * 100, cf.getName());
 
-                MutateClass mc = new MutateClass(ctClass.getName());
+                    //Gets all class methods to run mutation testing algorithm on them
+                    CtMethod[] methods = ctClass.getDeclaredMethods();
+                    mutationTestingForMethods(methods, cf, ctClass);
 
-                //Gets all class methods to run mutation testing algorithm on them
-                CtMethod[] methods = ctClass.getDeclaredMethods();
-                mutationTestingForMethods(mc, methods, cf, ctClass);
+                    //Rewrite the file to undo file modifications
+                    ctClass.writeFile(classesPath);
+                    ctClass.defrost();
+                }
+                indexMutationClass++;
 
-                //Rewrite the file to undo file modifications
-                ctClass.writeFile(classesPath);
-                ctClass.defrost();
+            } catch (IOException e) {
+                logger.error("An error occurred during file reading", e);
+                throw new MutatorException("File reading error");
+            } catch (BadBytecode | CannotCompileException e) {
+                logger.error("An error occurred during bytecode modification", e);
+                throw new MutatorException("An error occurred during bytecode modification");
+            } catch (TestRunnerException e) {
+                logger.error("An error occurred during project test running with a mutant", e);
+                throw e;
             }
-            indexMutationClass++;
         }
     }
 
 
     /**
      * Method take the method list and run the mutation testing algorithm for each
-     * @param mc
+     *
      * @param methods
      * @param cf
      * @param ctClass
@@ -97,22 +114,17 @@ public class Mutator {
      * @throws TestRunnerException
      * @throws CannotCompileException
      */
-    private void mutationTestingForMethods(MutateClass mc, CtMethod[] methods, ClassFile cf, CtClass ctClass) throws CannotCompileException, TestRunnerException, BadBytecode {
-        logger.info("{} methods might be mutated in the class : {}", methods.length, cf.getName());
+    private void mutationTestingForMethods(CtMethod[] methods, ClassFile cf, CtClass ctClass) throws CannotCompileException, TestRunnerException, BadBytecode {
+        logger.info("\t {} methods might be mutated in the class : {}", methods.length, cf.getName());
         for (CtMethod method : methods) {
-            // construction des methods a muter > je ne vois pas trop l'utilité pour l'instant, possible pour la description
-            MutateMethod mm = new MutateMethod(method.getName());
-
             CodeAttribute ca = method.getMethodInfo().getCodeAttribute();
 
-            mutationTestingForAMethod(mc, mm, ca, cf, ctClass, method);
+            mutationTestingForAMethod(ca, cf, ctClass, method);
         }
     }
 
 
     /**
-     * @param mc
-     * @param mm
      * @param ca
      * @param cf
      * @param ctClass
@@ -121,7 +133,7 @@ public class Mutator {
      * @throws TestRunnerException
      * @throws CannotCompileException
      */
-    private void mutationTestingForAMethod(MutateClass mc, MutateMethod mm, CodeAttribute ca, ClassFile cf, CtClass ctClass, CtMethod method) throws BadBytecode, TestRunnerException, CannotCompileException {
+    private void mutationTestingForAMethod(CodeAttribute ca, ClassFile cf, CtClass ctClass, CtMethod method) throws BadBytecode, TestRunnerException, CannotCompileException {
         if (ca != null) {
             CodeIterator ci = ca.iterator();
             while (ci.hasNext()) {
@@ -130,11 +142,7 @@ public class Mutator {
 
                 mutateOp(cf, ci, index, op, ctClass, method);
 
-                mm.addBytecode(op);
-
             }
-
-            mc.addMethods(mm);
         }
     }
 
@@ -151,7 +159,7 @@ public class Mutator {
     private void mutateOp(ClassFile cf, CodeIterator ci, int index, int op, CtClass ctClass, CtMethod method) throws TestRunnerException, CannotCompileException {
         for (Mutation mutation : mutations) {
             if (Mnemonic.OPCODE[op].equalsIgnoreCase(mutation.getTargetOperation())) {
-                logger.info("#{} {}", indexMutation, mutation);
+                logger.info("\t\t#{} {}", indexMutation, mutation);
                 indexMutation++;
                 Bytecode bytecode = new Bytecode(cf.getConstPool());
                 bytecode.add(mutation.getMutationOperationCode());
@@ -173,6 +181,7 @@ public class Mutator {
 
     /**
      * Method run test with Test Runner execution call and it undo the mutation transformation
+     *
      * @param ctClass
      * @param baseCode
      * @param index
@@ -182,7 +191,7 @@ public class Mutator {
      * @throws CannotCompileException
      * @throws TestRunnerException
      */
-    public void runTestsAndUndoMutation(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws CannotCompileException, TestRunnerException {
+    public void runTestsAndUndoMutation(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws TestRunnerException {
 
         runTest(ctClass.getName(), method, m);
         ctClass.defrost();
@@ -211,6 +220,7 @@ public class Mutator {
 
     /**
      * Builder method for mutant container
+     *
      * @param classMutant
      * @return
      * @throws CannotCompileException

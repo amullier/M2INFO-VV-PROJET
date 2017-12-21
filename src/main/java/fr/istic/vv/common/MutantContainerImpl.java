@@ -6,6 +6,7 @@ public class MutantContainerImpl implements MutantContainer{
 	private String methodName;
 	private MutantType mutantType;
 
+
 	@Override
 	public String getMutatedClass() {
 		return mutantClass;

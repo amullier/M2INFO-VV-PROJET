@@ -40,14 +40,21 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void addReport(Report report) {
+		//If the report is null warn add return
+		if(report==null||report.getMutantContainer()==null){
+			logger.warn("Adding a NULL report could be an error.");
+			return;
+		}
+
 		totalNumber++;
 		if(report.isMutantAlive()){
 			aliveNumber++;
-			logger.info("Mutant is still alive. (Total : {}%)", StringUtils.pourcentage((double)aliveNumber/totalNumber));
+			String percentageDisplayed = StringUtils.percentage(1-(double)aliveNumber/totalNumber);
+			logger.info("\t\tMutant is still alive. (Total : {}%)",percentageDisplayed );
 		}
 		else{
-			logger.info("Mutant killed.(Total : {}%)", StringUtils.pourcentage((double)aliveNumber/totalNumber));
-
+			String percentageDisplayed = StringUtils.percentage(1-(double)aliveNumber/totalNumber);
+			logger.info("\t\tMutant killed.(Total : {}%)", percentageDisplayed);
 		}
 		logger.debug("======================================");
 		logger.debug("Mutation information :");
@@ -60,6 +67,7 @@ public class ReportServiceImpl implements ReportService {
 		logger.debug("Adding report, current size = {}",reports.size());
 		reports.add(report);
 
+		generateHTML();
 	}
 
 	@Override
@@ -70,7 +78,6 @@ public class ReportServiceImpl implements ReportService {
 
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ df.format(date) +".csv"))) {
 			writer.write(toCSV());
-			logger.info("CSV file generated.");
 		} catch (IOException e) {
 			logger.error("Reporting error during file writing",e);
 		}
@@ -121,7 +128,7 @@ public class ReportServiceImpl implements ReportService {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter("./reports/report-"+ df.format(date) +".html"))){
 			writer.write(toHTML());
 			writer.close();
-			logger.info("HTML file generated.");
+			logger.debug("HTML file generated.");
 		} catch (IOException e) {
 			logger.error("Reporting error during file writing",e);
 		}
@@ -189,6 +196,8 @@ public class ReportServiceImpl implements ReportService {
 				"	<tr>" +
 				"   	<td><b>Duration :</b></td>" +
 				"   	<td>"+getInterval()+HTML_ENDLINE +
+				"       <td><b>Mutant killed :</b></td>"+
+				"       <td>"+StringUtils.percentage(1-(double)aliveNumber/totalNumber)+"%</td>"+
 				"	</tr>" +
 				"</table>";
 		head+="<table class='table'>" +
@@ -261,5 +270,25 @@ public class ReportServiceImpl implements ReportService {
 	@Override
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
+	}
+
+	public List<Report> getReports() {
+		return reports;
+	}
+
+	public int getAliveNumber() {
+		return aliveNumber;
+	}
+
+	public int getTotalNumber() {
+		return totalNumber;
+	}
+
+	public void setStartTesting(long startTesting) {
+		this.startTesting = startTesting;
+	}
+
+	public void setStopTesting(long stopTesting) {
+		this.stopTesting = stopTesting;
 	}
 }

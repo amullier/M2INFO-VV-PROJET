@@ -1,7 +1,7 @@
 package fr.istic.vv.testrunner.exception;
 
 /**
- * Exception throwed when an error occured test run with a mutant
+ * Exception for errors occurred during testing
  */
 public class TestRunnerException extends Exception {
 

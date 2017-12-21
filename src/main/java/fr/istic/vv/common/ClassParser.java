@@ -37,6 +37,47 @@ public class ClassParser {
     }
 
     /**
+     * Returns classes name located in directory
+     * String format include also package architecture (ex: fr.istic.vv.Operation)
+     * @param directory : root classes directory
+     * @return List of classes name, if there is not file in directory returns a empty list
+     */
+    public List<String> getClassesNameFromDirectory(File directory){
+        return getClassesNameFromDirectory(directory,"");
+    }
+
+    /**
+     * Method same as last but with a parentPackage parameter to ensure recursive execution
+     * @param directory
+     * @param parentPackage
+     * @return
+     */
+    private List<String> getClassesNameFromDirectory(File directory, String parentPackage){
+
+        List<String> classesName = new ArrayList<>();
+        if (directory.isDirectory()){
+            for (File classFile : directory.listFiles()) {
+                if(classFile.isDirectory()){
+                    String packageArchitecture = parentPackage.equals("") ? classFile.getName() : parentPackage + PACKAGE_SEPARATOR + classFile.getName();
+                    classesName.addAll(getClassesNameFromDirectory(classFile,packageArchitecture));
+                }
+                else if(classFile.isFile()){
+                    String prefix = "";
+                    if(!parentPackage.equalsIgnoreCase("")){
+                        prefix = parentPackage+PACKAGE_SEPARATOR;
+                    }
+                    classesName.add(prefix+getClassName(classFile));
+                }
+                else{
+                    logger.warn("File {} is not directory and not a file",classFile.getName());
+                }
+            }
+        }
+        return classesName;
+    }
+
+
+    /**
      * Load in classLoader classes from classesName located in directory
      * @param directoryClass
      * @param classesName
@@ -79,43 +120,6 @@ public class ClassParser {
         catch(ClassNotFoundException | NoClassDefFoundError e){
             logger.debug("The file {} can not be loaded",className,e);
         }
-    }
-
-    /**
-     * Returns classes name located in directory
-     * String format include also package architecture (ex: fr.istic.vv.Operation)
-     * @param directory : root classes directory
-     * @return List of classes name, if there is not file in directory returns a empty list
-     */
-    public List<String> getClassesNameFromDirectory(File directory){
-        return getClassesNameFromDirectory(directory,"");
-    }
-
-    /**
-     * Method same as last but with a parentPackage parameter to ensure recursive execution
-     * @param directory
-     * @param parentPackage
-     * @return
-     */
-    private List<String> getClassesNameFromDirectory(File directory, String parentPackage){
-
-        List<String> classesName = new ArrayList<>();
-        if (directory.isDirectory()){
-            for (File classFile : directory.listFiles()) {
-                if(classFile.isDirectory()){
-                    String packageArchitecture = parentPackage.equals("") ? classFile.getName() : parentPackage + PACKAGE_SEPARATOR + classFile.getName();
-                    classesName.addAll(getClassesNameFromDirectory(classFile,packageArchitecture));
-                }
-                else if(classFile.isFile()){
-                    classesName.add(parentPackage+PACKAGE_SEPARATOR+getClassName(classFile));
-                }
-                else{
-                    logger.trace("File {} is not directory and not a file",classFile.getName());
-                }
-            }
-        }
-        return classesName;
-
     }
 
     /**

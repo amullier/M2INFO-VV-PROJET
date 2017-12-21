@@ -18,7 +18,7 @@ public class Mutation {
     //Mutation type
     private MutantContainer.MutantType mutationType;
 
-    public Mutation(String targetOperation, int targetOperationCode,String mutationOperation, int mutationOperationCode, MutantContainer.MutantType mutationType) {
+    public Mutation(String targetOperation, int targetOperationCode, String mutationOperation, int mutationOperationCode, MutantContainer.MutantType mutationType) {
         this.targetOperation = targetOperation;
         this.targetOperationCode = targetOperationCode;
 

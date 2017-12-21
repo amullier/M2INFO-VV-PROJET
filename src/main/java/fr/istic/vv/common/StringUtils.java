@@ -1,6 +1,11 @@
 package fr.istic.vv.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class StringUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(StringUtils.class);
 
     private StringUtils() {
     }
@@ -11,18 +16,23 @@ public class StringUtils {
      * @param number
      * @return
      */
-    public static String pourcentage(double number){
-        int numberOfDecimal = 3;
-        int integerPart = (int)(number*100);
-        int decimalPart = (int)(number*10000) - (int)(number*100)*100;
+    public static String percentage(Double number){
 
-        for (int i=1;i<=numberOfDecimal;i++){
-            if(decimalPart/(10*numberOfDecimal)<0){
-                decimalPart*=10*numberOfDecimal;
-                break;
-            }
+        //Check value
+        if(number<0||number>1){
+            logger.warn("The value {} cannot be converted to a percentage.",number);
+            return Double.valueOf(number*100).toString();
         }
+        else{
+            //Maximal value
+            if(number==1D){
+                return "100.0";
+            }
 
-        return String.format("%d.%d", integerPart,decimalPart);
+            int integerPart = (int)(number*100);
+            int decimalPart = (int)(number*10000) - (int)(number*100)*100;
+
+            return String.format("%2d.%-2d", integerPart,decimalPart);
+        }
     }
 }
