@@ -51,7 +51,7 @@ public class TestRunnerImpl implements TestRunner {
         for (Class classString : classes) {
             addClass(classString);
         }
-        if (classes.size() == 0) {
+        if (classes.isEmpty()) {
             logger.warn("No classes loaded during this setter call");
         } else {
             logger.debug("{} classes are loaded in TestRunner", classes.size());

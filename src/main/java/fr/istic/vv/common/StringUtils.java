@@ -21,7 +21,7 @@ public class StringUtils {
         //Check value
         if(number<0||number>1){
             logger.warn("The value {} cannot be converted to a percentage.",number);
-            return Double.valueOf(number*100).toString();
+            return Double.toString(number*100);
         }
         else{
             //Maximal value
