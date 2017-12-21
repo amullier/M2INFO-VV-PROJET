@@ -1,5 +1,9 @@
 # Mutation testing project
-**Antoine Mullier & Romain Sadok**
+[![Coverage Status](https://coveralls.io/repos/github/amullier/M2INFO-VV-PROJET/badge.svg?branch=master)](https://coveralls.io/github/amullier/M2INFO-VV-PROJET?branch=master)
+
+_Antoine Mullier & Romain Sadok_
+
+----------------
 
 ## Build the project
 The project use **Maven** to build the project use  : <code>mvn install</code>

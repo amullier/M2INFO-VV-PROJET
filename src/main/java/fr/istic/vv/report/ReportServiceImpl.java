@@ -1,5 +1,6 @@
 package fr.istic.vv.report;
 
+import fr.istic.vv.common.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,9 @@ public class ReportServiceImpl implements ReportService {
 	private static final String HTML_STARTLINE = "<td>";
 	private static final String HTML_ENDLINE = "</td>";
 
+	private int aliveNumber;
+	private int totalNumber;
+
 	/**
 	 * Constructor creates a empty reports list
 	 */
@@ -36,11 +40,13 @@ public class ReportServiceImpl implements ReportService {
 
 	@Override
 	public void addReport(Report report) {
+		totalNumber++;
 		if(report.isMutantAlive()){
-			logger.info("Mutant is still alive.");
+			aliveNumber++;
+			logger.info("Mutant is still alive. (Total : {}%)", StringUtils.pourcentage((double)aliveNumber/totalNumber));
 		}
 		else{
-			logger.info("Mutant killed.");
+			logger.info("Mutant killed.(Total : {}%)", StringUtils.pourcentage((double)aliveNumber/totalNumber));
 
 		}
 		logger.debug("======================================");
