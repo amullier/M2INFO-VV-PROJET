@@ -41,7 +41,7 @@ public class TestRunnerImplTest {
         testRunner.execute();
     }
 
-    //@Test(expected = TestRunnerException.class)
+    @Test(expected = TestRunnerException.class)
     public void executionWithOutMutant() throws TestRunnerException {
         Class class1 = Mockito.any(Class.class);
         Class class2 = Mockito.any(Class.class);

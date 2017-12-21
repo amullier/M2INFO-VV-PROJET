@@ -191,7 +191,7 @@ public class Mutator {
      * @throws CannotCompileException
      * @throws TestRunnerException
      */
-    public void runTestsAndUndoMutation(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws TestRunnerException {
+    private void runTestsAndUndoMutation(CtClass ctClass, int baseCode, int index, CodeIterator ci, ClassFile cf, CtMethod method, MutantType m) throws TestRunnerException {
 
         runTest(ctClass.getName(), method, m);
         ctClass.defrost();
@@ -211,7 +211,7 @@ public class Mutator {
      * @throws CannotCompileException
      */
     private void runTest(String classMutant, CtMethod method, MutantType m) throws TestRunnerException {
-        MutantContainer mutantContainer = createMutantContainer(classMutant, method, m);
+        MutantContainer mutantContainer = createMutantContainer(classMutant, method.getName(), m);
         this.testRunner.setMutantContainer(mutantContainer);
         logger.debug("Start TestRunner execute after mutation on {}", classMutant);
         this.testRunner.execute();
@@ -225,11 +225,11 @@ public class Mutator {
      * @return
      * @throws CannotCompileException
      */
-    private MutantContainer createMutantContainer(String classMutant, CtMethod method, MutantType mt) {
+    public MutantContainer createMutantContainer(String classMutant, String method, MutantType mt) {
         logger.trace("Creating a mutant container");
         MutantContainer m = new MutantContainerImpl();
         m.setMutatedClass(classMutant);
-        m.setMutationMethod(method.getName());
+        m.setMutationMethod(method);
         m.setMutationType(mt);
         return m;
     }
