@@ -26,7 +26,6 @@ path of the root project directory (relative or absolute) as the first Main para
 java -classpath ./target/vv_projet-1.0-SNAPSHOT-jar-with-dependencies.jar fr.istic.vv.main.Main [PROJECT_DIRECTORY]
 ```
 
-
 The program analyse your project with Mutation testing methods and **it can take a while**.
 
 ### Reporting
