@@ -1,5 +1,0 @@
-Mutated class;Mutation type;Mutated method;Is mutant still alive ?
-fr.istic.vv.operations.Div;MULTIPLICATION;execute;TRUE
-fr.istic.vv.operations.Times;MULTIPLICATION;execute;FALSE
-fr.istic.vv.operations.Plus;ADDITION;execute;FALSE
-fr.istic.vv.operations.Minus;SUBTRACTION;execute;FALSE
