@@ -162,6 +162,7 @@ public class TestRunnerImpl implements TestRunner {
              */
 
             if(!process.waitFor(5, TimeUnit.MINUTES)){
+                logger.warn("The process takes too long : may be an infinite loop. It was destroyed.");
                 process.destroy();
             }
             else{
