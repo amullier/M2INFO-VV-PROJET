@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class TestRunnerImpl implements TestRunner {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestRunner.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestRunnerImpl.class);
 
     private List<Class> classes;
 
