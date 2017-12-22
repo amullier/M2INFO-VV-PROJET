@@ -1,5 +1,5 @@
 # Mutation testing project
-[![Coverage Status](https://coveralls.io/repos/github/amullier/M2INFO-VV-PROJET/badge.svg?branch=master)](https://coveralls.io/github/amullier/M2INFO-VV-PROJET?branch=master)
+![](https://coveralls.io/repos/github/amullier/M2INFO-VV-PROJET/badge.svg)
 
 _Antoine Mullier & Romain Sadok_
 
