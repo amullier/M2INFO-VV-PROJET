@@ -12,8 +12,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * TestRunner is in charge to run tests on the target project
@@ -150,17 +152,23 @@ public class TestRunnerImpl implements TestRunner {
 
             Process process = ps.start();
 
+            /*
             BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
                 logger.trace(line);
             }
-
-            process.waitFor();
             in.close();
+             */
 
-            int returnValue = process.exitValue(); //This block the execution but it is expected
-            reportService.addReport(new Report(returnValue == 0, mutantContainer));
+            if(!process.waitFor(5, TimeUnit.MINUTES)){
+                process.destroy();
+            }
+            else{
+                process.waitFor();
+                int returnValue = process.exitValue(); //This block the execution but it is expected
+                reportService.addReport(new Report(returnValue == 0, mutantContainer));
+            }
 
         } catch (IOException | InterruptedException e) {
             logger.warn("An error occurred during testing", e);
